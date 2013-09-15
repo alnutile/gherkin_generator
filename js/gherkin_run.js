@@ -2,11 +2,32 @@
 
     Drupal.behaviors.gherkin_generator_run = {
         attach: function (context) {
-            var renderMessage = function(message) {
-                var messages = "<div class='alert alert-info'>";                //@todo pull out error = FALSE/TRUE
-                messages += message;                                            //@todo pull out error type eg error, info, success etc
-                messages += "</div>";
-                $('#messages').empty().append(messages);
+            var setResultsIframe = function(url) {
+                $('.test-result').empty();
+                var iframe = '<iframe src="' + url + '"';
+                iframe += " width='850' height='450' frameborder='0'";
+                iframe += " scrolling='no' marginheight='0' marginwidth='0'>";
+                iframe += '</iframe>';
+                $('.test-result').append(iframe);
+            }
+
+            var renderMessage = function(data) {
+                if(data.file) {
+                  var message = data.file.message;
+                  var messages = "<div class='alert alert-info'>";
+                  messages += message;
+                  messages += "</div>";
+                  $('#messages').append(messages);
+                }
+
+                if(data.test) {
+                    var message = data.test.message;
+                    var messages = "<div class='alert alert-info'>";
+                    messages += message;
+                    messages += "</div>";
+                    $('#messages').append(messages);
+                    setResultsIframe(data.test.file);
+                }
             };
 
             $('#edit-run-test').click(function(){
@@ -25,7 +46,7 @@
                 };
                 $.post('/admin/gherkin_generator/run', parameters, function(data){
                         console.log(data);
-                        renderMessage(data.message);
+                        renderMessage(data);
                 }, "json");
             });
         }

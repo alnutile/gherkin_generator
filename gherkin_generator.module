@@ -184,7 +184,7 @@ function gherkin_generator_form_alter(&$form) {
             '#name' => 'field_text_add',
             '#value' => t('Add'),
             '#attributes' => array(
-                'data-method' => array('replaceWith'),
+                'data-method' => array('append'),
                 'data-test-message' => array('And I fill in'),
                 'data-parent-input' => array('form_field_and_fill_in'),
                 'data-value-2' => array('field_with_text'),

@@ -29,18 +29,20 @@
             }
 
             var renderMessage = function(message) {
-                //@todo pull out error = FALSE/TRUE
-                //@todo pull out error type eg error, info, success etc
-                var messages = "<div class='alert alert-info'>"+ message + "</div>";
+
+                var messages = "<div class='alert alert-info'>";                //@todo pull out error = FALSE/TRUE
+                messages += message;                                            //@todo pull out error type eg error, info, success etc
+                messages += "</div>";
                 $('#messages').empty().append(messages);
             }
 
             var placeSelection = function(text, destination, method, context) {
-                console.log("Destination " + destination);
+                console.log(method);
+                if(method == 'append') {                                        //Really two types of questions
+                    destination = 'ul.scenario'                                 //one that is replaced eg Scenario and URL
+                }                                                               //and one that is append eg "And I follow link x
                 $(''+destination+'', context)[method](text);
             }
-
-            var remove_icon = '<i class="remove icon-remove-circle"></i>';
 
             var setTitle = function(destination, text) {
                 if(destination == 'name') {
@@ -73,27 +75,18 @@
                     label += ' '; //ending space
                 }
 
-                //Set the target class
-                var destination_class = $(this).data('parent-input');
+                var destination_class = $(this).data('parent-input');           //Set the target class
 
-                //If different target
-                //  than existing targets
-                if($(this).data('target')) {
-                    destination_class = $(this).data('target');
+                if($(this).data('target')) {                                    //If different target
+                    destination_class = $(this).data('target');                 //than existing targets
                 };
 
-                //Set more uses of this term
-                var leaf_class = $(this).data('parent-input');
+                var leaf_class = $(this).data('parent-input');                  //Set more uses of this term
                 var get_value = $(this).data('parent-input');
 
-
-
-                //Get Element type an set as needed
-                // eg select
-                // default is input
-                var data_value = '';
-                if($(this).data('element-type')) {
-                    if($(this).data('element-type') == 'select') {
+                var data_value = '';                                            //Get Element type an set as needed
+                if($(this).data('element-type')) {                              // eg select
+                    if($(this).data('element-type') == 'select') {              // default is input
                         label = $(this).data('test-message') + ' ';
                         label += $('select[name='+get_value+'] :selected').val();
                         data_value = '';
@@ -106,10 +99,7 @@
                     data_value += wrapperCheck(label_text);
                 }
 
-
-
-                //Setup possible 2nd input and label
-                var data_value2 = '';
+                var data_value2 = '';                                           //Setup possible 2nd input and label
                 var middle_words = '';
 
                 if($(this).data('value-2')) {
@@ -122,29 +112,25 @@
                     }
                 }
 
-                //Apply elements to the Steps area.
-                var destination_wrapper = '<li class="' +leaf_class+ '">'
-                    destination_wrapper += label;                       //eg Scenario:
-                    destination_wrapper += data_value;                  //The input of the user
-                    destination_wrapper += ' ' + middle_words;          //In between text
-                    destination_wrapper += ' ' + data_value2;           //More input if applicable
+                var destination_wrapper = '<li class="' +leaf_class+ '">'       //Apply elements to the Steps area.
+                    destination_wrapper += label;                               //eg Scenario:
+                    destination_wrapper += data_value;                          //The input of the user
+                    destination_wrapper += ' ' + middle_words;                  //In between text
+                    destination_wrapper += ' ' + data_value2;                   //More input if applicable
                     destination_wrapper += closeCheck(label_text);
                     destination_wrapper += '</li>';
 
                 var destination = '.scenario .' +destination_class;
                 setTitle(destination_class, data_value);
-                //Define the method
-                //  eg append or replaceWith etc
-                var method = $(this).data('method');
+
+                var method = $(this).data('method');                            //Define the method eg append or replaceWith etc
                 placeSelection(destination_wrapper, destination, method, context);
             });
        }
     };
 
-    //@todo see why on did not work
-    // then see why it did not work as a behavior?
-    $(document).ready(function() {
-        $('i').live('click', function(){
+    $(document).ready(function() {                                              //@todo see why on did not work
+        $('i').live('click', function(){                                        //then see why it did not work as a behavior?
             $(this).parent('li').empty();
         });
     });

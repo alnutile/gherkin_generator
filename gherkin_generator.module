@@ -264,6 +264,12 @@ function gherkin_generator_form_alter(&$form) {
             ),
         );
 
+        $form['filename'] = array(
+            '#type' => 'hidden',
+            '#name' => 'filename',
+            '#value' => date(time()),
+        );
+
 
     }
 }

@@ -37,7 +37,6 @@
             }
 
             var placeSelection = function(text, destination, method, context) {
-                console.log(method);
                 if(method == 'append') {                                        //Really two types of questions
                     destination = 'ul.scenario'                                 //one that is replaced eg Scenario and URL
                 }                                                               //and one that is append eg "And I follow link x
@@ -55,14 +54,6 @@
                     e.preventDefault();
                 }
             );
-
-            $('#edit-run-test').click(function(){
-                var scenario = $('.scenario').text();
-                $.post('/admin/gherkin_generator/run', { scenario: scenario }, function(data){
-                    console.log(data);
-                    renderMessage(data.message);
-                }, "json");
-            });
 
             $('button.steps', context).click(function(){
                 var label = '';
@@ -131,7 +122,7 @@
 
     $(document).ready(function() {                                              //@todo see why on did not work
         $('i').live('click', function(){                                        //then see why it did not work as a behavior?
-            $(this).parent('li').empty();
+            $(this).parent('li').remove();
         });
     });
 

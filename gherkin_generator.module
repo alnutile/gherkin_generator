@@ -58,7 +58,8 @@ function gherkin_generator_form_alter(&$form) {
         );
 
         $form['#attached']['css']['gherkin_generator'] = $path . '/css/gherkin_edit.css';
-        $form['#attached']['js']['gherkin_generator'] = $path . '/js/gherkin_edit.js';
+        $form['#attached']['js']['gherkin_generator_edit'] = $path . '/js/gherkin_edit.js';
+        $form['#attached']['js']['gherkin_generator_run'] = $path . '/js/gherkin_run.js';
 
         $form['existing_test'] = array(
             '#type' => 'container',

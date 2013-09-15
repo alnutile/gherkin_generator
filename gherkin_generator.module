@@ -1,0 +1,268 @@
+<?php
+/**
+ * @file
+ * Code for the gherkin_generator feature.
+ */
+
+include_once 'gherkin_generator.features.inc';
+
+function gherkin_generator_permission() {
+    return array(
+        'run gherkin test' =>  array(
+            'title' => t('Allowed to run a gherkin test'),
+        ),
+    );
+}
+
+function gherkin_generator_theme(){
+    return array(
+        'gherkin_results_area' => array(
+            'variables' => array(
+                'params' => NULL
+            ),
+            'template' => 'tpl/gherkin-results-area'
+        )
+    );
+}
+
+function gherkin_generator_page_alter(&$page) {
+
+    if(arg(2) == 'gherkin-generator' && arg(1) == 'add') {
+
+        $page['content']['system_main']['#attributes'] = array('class' => array('span6'));
+        $page['content']['test_results']['#theme'] = 'gherkin_results_area';
+    }
+}
+
+
+function gherkin_generator_menu() {
+    $items['admin/gherkin_generator/run'] = array(
+        'page callback' => array('gherkin_generator_run'),
+        'file' => 'inc/gherkin_generator_run.inc',
+        'access arguments' => array('run gherkin test'),
+        'type' => MENU_CALLBACK
+    );
+    return $items;
+}
+
+function gherkin_generator_form_alter(&$form) {
+    if($form['#form_id'] == 'gherkin_generator_node_form') {
+        /**
+         * Add CSS / and JS Attributes to form
+         */
+        $path = drupal_get_path('module', 'gherkin_generator');
+        dpm($form);
+        //$form['title'] = array('#type' => 'hidden');
+        $form['#attributes'] = array(
+            //'class' => array('form-horizontal'),
+        );
+
+        $form['#attached']['css']['gherkin_generator'] = $path . '/css/gherkin_edit.css';
+        $form['#attached']['js']['gherkin_generator'] = $path . '/js/gherkin_edit.js';
+
+        $form['existing_test'] = array(
+            '#type' => 'container',
+            '#attributes' => array('class' => array('well'), 'id' => 'existing-test'),
+            '#weight' => -101,
+        );
+
+        $form['existing_test']['intro'] = array(
+            '#markup' => "This is a tool to help to generate '<a href=\"https://github.com/cucumber/cucumber/wiki/Gherkin\">Gherkin'</a>, a language to aid in software development and testing.<hr>"
+        );
+
+        $form['existing_test']['build'] = array(
+            '#markup' => '<ul class="scenario">
+                            <li class="feature">Feature: Tests for ?</li>
+                            <li class="name">Scenario: Fill in a name below...</li>
+                            <li class="url">Given I am on "?"</li>
+                          </ul>'
+        );
+
+
+        $form['existing_test']['actions'] = array(
+            '#type' => 'container',
+            '#attributes' => array('class' => array('actions')),
+        );
+
+
+        $form['existing_test']['actions']['run_test'] = array(
+            '#type' => 'button',
+            '#name' => 'run_test',
+            '#value' => t('Run test'),
+            '#attributes' => array('class' => array('btn-success')),
+        );
+
+        $form['existing_test']['actions']['save_test'] = array(
+            '#type' => 'button',
+            '#name' => 'save_test',
+            '#value' => 'Save tests',
+            '#attributes' => array('class' => array('btn-info')),
+        );
+
+        $form['existing_test']['actions']['start_over'] = array(
+            '#type' => 'button',
+            '#name' => 'start_over',
+            '#value' => t('Start over'),
+            '#attributes' => array('class' => array('btn-danger')),
+        );
+
+
+        $form['questions'] = array(
+            '#type' => 'container',
+            '#attributes' => array('class' => array('well')),
+            '#weight' => -100
+        );
+
+        $form['questions']['test_name'] = array(
+            '#type' => 'container',
+        );
+
+        $form['questions']['test_name']['name'] = array(
+            '#type' => 'textfield',
+            '#title' => t('What do you want to call this test?'),
+            '#attributes' => array('placeholder' =>  t('A simple descriptive name of the test')),
+
+        );
+
+        $form['questions']['test_name']['name_button'] = array(
+            '#type' => 'button',
+            '#value' => t('Name it'),
+            '#attributes' => array(
+                'data-method' => array('replaceWith'),
+                'data-test-message' => array('Scenario'),
+                'data-parent-input' => array('name'),
+                'class' => array('steps')
+             ),
+        );
+
+        $form['questions']['when_i_go_to'] = array(
+            '#type' => 'container'
+        );
+
+        $form['questions']['when_i_go_to']['url'] = array(
+            '#type' => 'textfield',
+            '#title' => t('When I go to'),
+            '#name' => 'url',
+            '#attributes' => array('placeholder' =>  t('a full website address')),
+        );
+
+        $form['questions']['when_i_go_to']['url_button'] = array(
+            '#type' => 'button',
+            '#name' => 'go_to',
+            '#value' => t('Add'),
+            '#attributes' => array(
+                'data-method' => array('replaceWith'),
+                'data-test-message' => array('Given I am on'),
+                'data-parent-input' => array('url'),
+                'class' => array('steps')
+            ),
+        );
+
+        $form['questions']['and_i_fill_in'] = array(
+            '#type' => 'container'
+        );
+
+        $form['questions']['and_i_fill_in']['form_field_name'] = array(
+            '#type' => 'textfield',
+            '#title' => t('And I fill in'),
+            '#name' => 'form_field_and_fill_in',
+            '#attributes' => array('placeholder' =>  t('a form field name')),
+        );
+
+        $form['questions']['and_i_fill_in']['with'] = array(
+            '#markup' => 'with',
+        );
+
+        $form['questions']['and_i_fill_in']['field_text'] = array(
+            '#type' => 'textfield',
+            '#name' => 'field_with_text',
+            '#attributes' => array('placeholder' =>  t('with the following text field')),
+        );
+
+        $form['questions']['and_i_fill_in']['field_text_button'] = array(
+            '#type' => 'button',
+            '#name' => 'field_text_add',
+            '#value' => t('Add'),
+            '#attributes' => array(
+                'data-method' => array('replaceWith'),
+                'data-test-message' => array('And I fill in'),
+                'data-parent-input' => array('form_field_and_fill_in'),
+                'data-value-2' => array('field_with_text'),
+                'data-middle-words' => array('with'),
+                'class' => array('steps')
+            ),
+        );
+
+
+        $form['questions']['and_i_click_on_a'] = array(
+            '#type' => 'container'
+        );
+
+        $form['questions']['and_i_click_on_a']['click_on_type'] = array(
+            '#type' => 'select',
+            '#name' => 'click_on_type',
+            '#title' => t('And I click on a'),
+            '#options' => array('follow' => t('link'), 'press' => t('button')),
+        );
+
+        $form['questions']['and_i_click_on_a']['called'] = array(
+            '#markup' => 'called',
+        );
+
+        $form['questions']['and_i_click_on_a']['field_text'] = array(
+            '#type' => 'textfield',
+            '#name' => 'click_on_text',
+            '#attributes' => array('placeholder' =>  t('enter a link of button name here'))
+        );
+
+        $form['questions']['and_i_click_on_a']['click_on_a'] = array(
+            '#type' => 'button',
+            '#name' => 'click_on_a',
+            '#value' => t('Add'),
+            '#attributes' => array(
+                'data-method' => array('append'),
+                'data-element-type' => array('select'),
+                'data-target' => array('click_on'),
+                'data-test-message' => array('And I'),
+                'data-parent-input' => array('click_on_type'),
+                'data-value-2' => array('click_on_text'),
+                'class' => array('steps')
+            ),
+        );
+
+
+        $form['questions']['then_i_should_see'] = array(
+            '#type' => 'container'
+        );
+
+        $form['questions']['then_i_should_see']['click_on_type'] = array(
+            '#type' => 'select',
+            '#name' => 'should_see',
+            '#title' => t('Then I should see'),
+            '#options' => array('should see' => t('see'), 'should not see' => t('not see')),
+        );
+
+        $form['questions']['then_i_should_see']['see_not_see_some_text'] = array(
+            '#type' => 'textfield',
+            '#name' => 'see_not_see_some_text',
+            '#attributes' => array('placeholder' =>  t('some text on that page'))
+        );
+
+        $form['questions']['then_i_should_see']['see_not_see'] = array(
+            '#type' => 'button',
+            '#name' => 'see_not_see',
+            '#value' => t('Add'),
+            '#attributes' => array(
+                'data-method' => array('append'),
+                'data-target' => array('see'),
+                'data-element-type' => array('select'),
+                'data-test-message' => array('Then I'),
+                'data-parent-input' => array('should_see'),
+                'data-value-2' => array('see_not_see_some_text'),
+                'class' => array('steps')
+            ),
+        );
+
+
+    }
+}

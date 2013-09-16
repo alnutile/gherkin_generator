@@ -25,3 +25,4 @@ If there are any errors check out the drupal reports area under this modules nam
 
 There is an example test include just click the Example button after you enable the module at node/add/gherkin-generator
 
+@todo add submodule for behat

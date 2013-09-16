@@ -49,6 +49,12 @@ function gherkin_generator_menu() {
         'access arguments' => array('run gherkin test'),
         'type' => MENU_CALLBACK
     );
+    $items['admin/gherkin_generator/save'] = array(
+        'page callback' => array('gherkin_generator_save'),
+        'file' => 'inc/gherkin_generator_save.inc',
+        'access arguments' => array('run gherkin test'),
+        'type' => MENU_CALLBACK
+    );
     return $items;
 }
 
@@ -64,13 +70,14 @@ function gherkin_generator_form_alter(&$form) {
         $form['#attached']['css']['gherkin_generator'] = $path . '/css/gherkin_edit.css';
         $form['#attached']['js']['gherkin_generator_edit'] = $path . '/js/gherkin_edit.js';
         $form['#attached']['js']['gherkin_generator_run'] = $path . '/js/gherkin_run.js';
+        $form['#attached']['js']['gherkin_generator_run'] = $path . '/js/gherkin_save.js';
         drupal_add_library('system', 'ui.sortable');
 
         $filename = REQUEST_TIME;
 
         $form['title'] = array(
             '#type' => 'hidden',
-            '#value' => 'Feature #' . $filename
+            '#value' => $filename
         );
 
         $form['actions']['#attributes'] = array('class' => array('hidden'));
@@ -212,6 +219,7 @@ function gherkin_generator_form_alter(&$form) {
             '#name' => 'click_on_type',
             '#title' => t('And I click on a'),
             '#options' => array('follow' => t('link'), 'press' => t('button')),
+            '#validated' => TRUE
         );
 
         $form['questions']['and_i_click_on_a']['called'] = array(
@@ -249,6 +257,7 @@ function gherkin_generator_form_alter(&$form) {
             '#suffix' => '</div>',
             '#title' => t('Then I should see'),
             '#options' => array('should see' => t('see'), 'should not see' => t('not see')),
+            '#validated' => TRUE
         );
 
         $form['questions']['then_i_should_see']['see_not_see_some_text'] = array(
@@ -278,7 +287,46 @@ function gherkin_generator_form_alter(&$form) {
             '#name' => 'filename',
             '#value' => $filename,
         );
-
-
     }
 }
+
+
+function _gherkin_generator_save_to_file($request) {
+    $feature = _gherkin_generator_parse_questions($request['scenario']);
+    $filename = $request['filename'];
+    $path = file_build_uri("/gherkin_tests/");
+
+    if (!file_prepare_directory($path, FILE_CREATE_DIRECTORY)) {
+        drupal_mkdir($path);
+    }
+
+    $response = file_unmanaged_save_data($feature, $path . '/' . $filename . '.feature', $replace = FILE_EXISTS_REPLACE);
+    $file_url = l('click here', file_create_url($response), array('attributes' => array('target' => '_blank')));
+
+    if($response == FALSE) {
+        watchdog('gherkin_generator', "File could not be made.", $variables = array(), $severity = WATCHDOG_ERROR, $link = NULL);
+        return array('message' => "Error file could not be save", 'file' => $response, 'error' => '1');
+    } else {
+        $date = format_date(time(), $type = 'medium', $format = '', $timezone = NULL, $langcode = NULL);
+        watchdog('gherkin_generator', "%date File made %name", $variables = array('%date' => $date, '%name' => $response), $severity = WATCHDOG_NOTICE, $link = $file_url);
+        return array('message' => t('@date: <br> File created !name to download ', array('@date' => $date, '!name' => $file_url)), 'file' => $response, 'error' => '0');
+    }
+}
+
+function _gherkin_generator_parse_questions($scenario) {
+    $final_output = '';
+    $count = 0;
+    foreach($scenario as $value) {
+        if($count == 1) {
+            $indent = '  ';
+        } elseif($count > 1) {
+            $indent = '    ';
+        } else {
+            $indent = '';
+        }
+        $final_output = $final_output .  $indent . $value . " \r\n";
+        $count ++;
+    }
+    return $final_output;
+}
+

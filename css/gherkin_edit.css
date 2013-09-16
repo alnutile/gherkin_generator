@@ -3,5 +3,5 @@
 .node-gherkin_generator-form label, .node-gherkin_generator-form .qualifier {
   font-size: 18px; }
 
-.running-tests {
+.running-tests, .saving-tests {
   display: none; }

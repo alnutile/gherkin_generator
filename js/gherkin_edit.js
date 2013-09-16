@@ -13,6 +13,14 @@
                     }
             };
 
+            var checkIfCanSave = function() {
+                if($('li.feature').text() != 'Feature: Tests for ?'&&
+                    $('li.scenario').text() != 'Scenario: Fill in a name below...')
+                {
+                    $('#edit-save-test').removeClass('disabled');
+                }
+            };
+
             var wrapperCheck = function(label_text) {
                if (label_text == 'Given I am on' || label_text.search('Then I') != -1 || label_text.search('And I') != -1) {
                     return '"';
@@ -64,7 +72,8 @@
                 var message = "You just loaded a test for Wikipedia click Run Test to see it start";
                 renderMessage(message, 'success');
                 $('ul.scenario:eq(0)').empty().append(example);
-                $('#edit-run-test').removeClass('disabled');
+                checkIfCanRun();
+                checkIfCanSave();
                 return false;
             });
 
@@ -72,7 +81,7 @@
 
             $('#gherkin-generator-node-form').submit(
                 function(e){
-                    e.preventDefault();
+                    //e.preventDefault();
                 }
             );
 
@@ -138,6 +147,7 @@
                 var method = $(this).data('method');                            //Define the method eg append or replaceWith etc
                 placeSelection(destination_wrapper, destination, method, context);
                 checkIfCanRun();
+                checkIfCanSave();
             });
        }
     };

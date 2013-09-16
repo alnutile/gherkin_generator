@@ -9,15 +9,16 @@ So you should be able to run behat/bin/behat after you are done.
 Also, if using selenium make sure you run it in the background.
 
 Download the jar file to your computer/server
-,,,bash
+
+``bash
 curl -O http://selenium.googlecode.com/files/selenium-server-standalone-2.31.0.jar
-,,,,
+```
 
 Then start it at the command line
 
-,,,bash
+```bash
 java -jar selenium-server-standalone-2.31.0.jar
-,,,
+```
 
 
 If there are any errors check out the drupal reports area under this modules name.

@@ -14,11 +14,20 @@
             }
 
             var wrapperCheck = function(label_text) {
-               if (label_text == 'Given I am on' || label_text.search('Then I') != -1) {
+               if (label_text == 'Given I am on' || label_text.search('Then I') != -1 || label_text.search('And I') != -1) {
                     return '"';
                } else {
                    return '';
                }
+            }
+
+            var sortableQuestion = function(row) {
+                var sortIcon = '<i class="icon-move"> ';
+                if(row != 'name' && row != 'url') {
+                    return sortIcon;
+                } else {
+                    return ''
+                }
             }
 
             var closeCheck = function(label_text) {
@@ -105,14 +114,16 @@
                         middle_words = $(this).data('middle-words');
                     }
                 }
-
-                var destination_wrapper = '<li class="' +leaf_class+ '">'       //Apply elements to the Steps area.
+                var sortable = sortableQuestion(destination_class);
+                var destination_wrapper = '<li class="' +leaf_class+ '">';      //Apply elements to the Steps area.
+                    destination_wrapper += sortable + '</i>'                    //
                     destination_wrapper += label;                               //eg Scenario:
-                    destination_wrapper += data_value;                          //The input of the user
-                    destination_wrapper += ' ' + middle_words;                  //In between text
-                    destination_wrapper += ' ' + data_value2;                   //More input if applicable
+                    destination_wrapper += data_value;
+                    (middle_words.length) ? destination_wrapper += ' ' + middle_words : '';
+                    (data_value2.length) ? destination_wrapper += ' ' + data_value2 : '';
                     destination_wrapper += closeCheck(label_text);
                     destination_wrapper += '</li>';
+                console.log('..'+destination_wrapper+'..');
 
                 var destination = '.scenario .' +destination_class;
 
@@ -124,7 +135,7 @@
     };
 
     $(document).ready(function() {                                              //@todo see why on did not work
-        $('i').live('click', function(){                                        //then see why it did not work as a behavior?
+        $('i.remove').live('click', function(){                                 //then see why it did not work as a behavior?
             $(this).parent('li').remove();
         });
     });

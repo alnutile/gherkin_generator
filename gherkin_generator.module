@@ -21,6 +21,12 @@ function gherkin_generator_theme(){
                 'params' => NULL
             ),
             'template' => 'tpl/gherkin-results-area'
+        ),
+        'gherkin_questions_area' => array(
+            'variables' => array(
+                'params' => NULL
+            ),
+            'template' => 'tpl/gherkin-questions-area'
         )
     );
 }
@@ -82,11 +88,7 @@ function gherkin_generator_form_alter(&$form) {
         );
 
         $form['existing_test']['build'] = array(
-            '#markup' => '<ul class="scenario sortable">
-                            <li class="feature">Feature: Tests for ?</li>
-                            <li class="name">Scenario: Fill in a name below...</li>
-                            <li class="url">Given I am on "?"</li>
-                          </ul>'
+            '#theme' => 'gherkin_questions_area'
         );
 
 

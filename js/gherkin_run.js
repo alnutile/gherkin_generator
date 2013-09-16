@@ -18,7 +18,7 @@
                 $('.test-result').empty();
                 var iframe = '<iframe src="' + url + '"';
                 iframe += " width='850' height='450' frameborder='0'";
-                iframe += " scrolling='no' marginheight='0' marginwidth='0'>";
+                iframe += " scrolling='yes' marginheight='0' marginwidth='0'>";
                 iframe += '</iframe>';
                 $('.test-result').append(iframe);
             }
@@ -56,7 +56,6 @@
                     "filename": filename
                 };
                 $.post('/admin/gherkin_generator/run', parameters, function(data){
-                        console.log(data);
                         renderMessage(data);
                 }, "json");
             });

@@ -17,7 +17,7 @@
             var setResultsIframe = function(url) {
                 $('.test-result').empty();
                 var iframe = '<iframe src="' + url + '"';
-                iframe += " width='850' height='450' frameborder='0'";
+                iframe += " width='500' height='750' frameborder='0'";
                 iframe += " scrolling='yes' marginheight='0' marginwidth='0'>";
                 iframe += '</iframe>';
                 $('.test-result').append(iframe);
@@ -43,7 +43,7 @@
             };
 
             $('#edit-run-test').click(function(){
-                var scenario = $('ul.scenario li');
+                var scenario = $('ul.scenario:eq(0) li');
                 var items = scenario.length;
                 var scenario_array = new Array()
                 for(var i = 0; i < items; i++) {

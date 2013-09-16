@@ -11,15 +11,24 @@
                     {
                         $('#edit-run-test').removeClass('disabled');
                     }
-            }
+            };
 
             var wrapperCheck = function(label_text) {
-               if (label_text == 'Given I am on' || label_text.search('Then I') != -1) {
+               if (label_text == 'Given I am on' || label_text.search('Then I') != -1 || label_text.search('And I') != -1) {
                     return '"';
                } else {
                    return '';
                }
-            }
+            };
+
+            var sortableQuestion = function(row) {
+                var sortIcon = '<i class="icon-move"> ';
+                if(row != 'name' && row != 'url') {
+                    return sortIcon;
+                } else {
+                    return ''
+                }
+            };
 
             var closeCheck = function(label_text) {
                 if (label_text == 'Given I am on' || label_text.search('Scenario') != -1) {
@@ -27,30 +36,39 @@
                 } else {
                     return ' <i class="remove icon-remove-circle"></i>';
                 }
-            }
+            };
 
             var setFeature = function(destination_class, data_value) {
                 if(destination_class == 'url') {
                     $('.feature').empty().append('Feature: Tests for ' + data_value);
                 }
-            }
+            };
 
-            var renderMessage = function(message) {
-
-                var messages = "<div class='alert alert-info'>";                //@todo pull out error = FALSE/TRUE
+            var renderMessage = function(message, error_type) {
+                var messages = "<div class='alert alert-" + error_type + "'>";         //@todo pull out error = FALSE/TRUE
                 messages += message;                                            //@todo pull out error type eg error, info, success etc
                 messages += "</div>";
-                $('#messages').empty().append(messages);
-            }
+                $('#messages', context).append(messages);
+            };
 
             var placeSelection = function(text, destination, method, context) {
                 if(method == 'append') {                                        //Really two types of questions
                     destination = 'ul.scenario'                                 //one that is replaced eg Scenario and URL
                 }                                                               //and one that is append eg "And I follow link x
                 $(''+destination+'', context)[method](text);
-            }
+            };
 
 
+            $('a.example-test-load', context).click(function(){
+                var example = $('ul.example-test').html();
+                var message = "You just loaded a test for Wikipedia click Run Test to see it start";
+                renderMessage(message, 'success');
+                $('ul.scenario:eq(0)').empty().append(example);
+                $('#edit-run-test').removeClass('disabled');
+                return false;
+            });
+
+            $('ul.sortable').sortable();
 
             $('#gherkin-generator-node-form').submit(
                 function(e){
@@ -105,12 +123,13 @@
                         middle_words = $(this).data('middle-words');
                     }
                 }
-
-                var destination_wrapper = '<li class="' +leaf_class+ '">'       //Apply elements to the Steps area.
+                var sortable = sortableQuestion(destination_class);
+                var destination_wrapper = '<li class="' +leaf_class+ '">';      //Apply elements to the Steps area.
+                    destination_wrapper += sortable + '</i>'                    //
                     destination_wrapper += label;                               //eg Scenario:
-                    destination_wrapper += data_value;                          //The input of the user
-                    destination_wrapper += ' ' + middle_words;                  //In between text
-                    destination_wrapper += ' ' + data_value2;                   //More input if applicable
+                    destination_wrapper += data_value;
+                    (middle_words.length) ? destination_wrapper += ' ' + middle_words : '';
+                    (data_value2.length) ? destination_wrapper += ' ' + data_value2 : '';
                     destination_wrapper += closeCheck(label_text);
                     destination_wrapper += '</li>';
 
@@ -124,9 +143,10 @@
     };
 
     $(document).ready(function() {                                              //@todo see why on did not work
-        $('i').live('click', function(){                                        //then see why it did not work as a behavior?
+        $('i.remove').live('click', function(){                                 //then see why it did not work as a behavior?
             $(this).parent('li').remove();
         });
+
     });
 
 })(jQuery);

@@ -1,6 +1,11 @@
-form.gherkin-generator-node-form {
+.node-gherkin_generator-form {
+  ul.sortable {
+    list-style: none;
+  }
 
-
+  label, .qualifier {
+    font-size: 18px;
+  }
 }
 
 .running-tests {

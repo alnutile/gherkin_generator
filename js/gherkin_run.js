@@ -1,7 +1,19 @@
 (function ($) {
+    $( document ).ajaxStart(
+        function(){
+            $('.running-tests').fadeIn();
+        }
+    );
+
+    $( document ).ajaxStop(
+        function(){
+            $('.running-tests').fadeOut();
+        }
+    );
 
     Drupal.behaviors.gherkin_generator_run = {
         attach: function (context) {
+
             var setResultsIframe = function(url) {
                 $('.test-result').empty();
                 var iframe = '<iframe src="' + url + '"';
@@ -39,7 +51,6 @@
                 }
 
                 var filename = $('input[name=filename]').val();
-                console.log("Filename" + filename);
                 var parameters = {
                     "scenario[]": scenario_array,
                     "filename": filename

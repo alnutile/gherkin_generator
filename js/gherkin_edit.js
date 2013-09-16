@@ -5,6 +5,13 @@
 
     Drupal.behaviors.gherkin_generator_edit = {
         attach: function (context) {
+            var checkIfCanRun = function() {
+                if($('li.feature').text() != 'Feature: Tests for ?'&&
+                    $('li.scenario').text() != 'Scenario: Fill in a name below...')
+                    {
+                        $('#edit-run-test').removeClass('disabled');
+                    }
+            }
 
             var wrapperCheck = function(label_text) {
                if (label_text == 'Given I am on' || label_text.search('Then I') != -1) {
@@ -43,11 +50,7 @@
                 $(''+destination+'', context)[method](text);
             }
 
-            var setTitle = function(destination, text) {
-                if(destination == 'name') {
-                    $('#edit-title').val(text);
-                }
-            }
+
 
             $('#gherkin-generator-node-form').submit(
                 function(e){
@@ -112,10 +115,10 @@
                     destination_wrapper += '</li>';
 
                 var destination = '.scenario .' +destination_class;
-                setTitle(destination_class, data_value);
 
                 var method = $(this).data('method');                            //Define the method eg append or replaceWith etc
                 placeSelection(destination_wrapper, destination, method, context);
+                checkIfCanRun();
             });
        }
     };

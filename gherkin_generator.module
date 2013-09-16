@@ -29,7 +29,7 @@ function gherkin_generator_page_alter(&$page) {
 
     if(arg(2) == 'gherkin-generator' && arg(1) == 'add') {
 
-        $page['content']['system_main']['#attributes'] = array('class' => array('span6'));
+        $page['content']['system_main']['#attributes']['class'][] = 'span6';
         $page['content']['test_results']['#theme'] = 'gherkin_results_area';
     }
 }
@@ -51,15 +51,20 @@ function gherkin_generator_form_alter(&$form) {
          * Add CSS / and JS Attributes to form
          */
         $path = drupal_get_path('module', 'gherkin_generator');
-        //dpm($form);
-        //$form['title'] = array('#type' => 'hidden');
-        $form['#attributes'] = array(
-            //'class' => array('form-horizontal'),
-        );
 
+
+        //$form['#attributes']['class'][] = 'form-horizontal';
         $form['#attached']['css']['gherkin_generator'] = $path . '/css/gherkin_edit.css';
         $form['#attached']['js']['gherkin_generator_edit'] = $path . '/js/gherkin_edit.js';
         $form['#attached']['js']['gherkin_generator_run'] = $path . '/js/gherkin_run.js';
+
+        $filename = REQUEST_TIME;
+
+        $form['title'] = array(
+            '#type' => 'hidden',
+            '#value' => 'Feature #' . $filename
+        );
+
 
         $form['existing_test'] = array(
             '#type' => 'container',
@@ -90,21 +95,21 @@ function gherkin_generator_form_alter(&$form) {
             '#type' => 'button',
             '#name' => 'run_test',
             '#value' => t('Run test'),
-            '#attributes' => array('class' => array('btn-success')),
+            '#attributes' => array('class' => array('btn-success', 'disabled')),
         );
 
         $form['existing_test']['actions']['save_test'] = array(
             '#type' => 'button',
             '#name' => 'save_test',
             '#value' => 'Save tests',
-            '#attributes' => array('class' => array('btn-info')),
+            '#attributes' => array('class' => array('btn-info', 'disabled')),
         );
 
         $form['existing_test']['actions']['start_over'] = array(
             '#type' => 'button',
             '#name' => 'start_over',
             '#value' => t('Start over'),
-            '#attributes' => array('class' => array('btn-danger')),
+            '#attributes' => array('class' => array('btn-danger', 'disabled')),
         );
 
 
@@ -114,9 +119,6 @@ function gherkin_generator_form_alter(&$form) {
             '#weight' => -100
         );
 
-        $form['questions']['test_name'] = array(
-            '#type' => 'container',
-        );
 
         $form['questions']['test_name']['name'] = array(
             '#type' => 'textfield',
@@ -136,9 +138,6 @@ function gherkin_generator_form_alter(&$form) {
              ),
         );
 
-        $form['questions']['when_i_go_to'] = array(
-            '#type' => 'container'
-        );
 
         $form['questions']['when_i_go_to']['url'] = array(
             '#type' => 'textfield',
@@ -159,9 +158,6 @@ function gherkin_generator_form_alter(&$form) {
             ),
         );
 
-        $form['questions']['and_i_fill_in'] = array(
-            '#type' => 'container'
-        );
 
         $form['questions']['and_i_fill_in']['form_field_name'] = array(
             '#type' => 'textfield',
@@ -195,10 +191,6 @@ function gherkin_generator_form_alter(&$form) {
         );
 
 
-        $form['questions']['and_i_click_on_a'] = array(
-            '#type' => 'container'
-        );
-
         $form['questions']['and_i_click_on_a']['click_on_type'] = array(
             '#type' => 'select',
             '#name' => 'click_on_type',
@@ -229,11 +221,6 @@ function gherkin_generator_form_alter(&$form) {
                 'data-value-2' => array('click_on_text'),
                 'class' => array('steps')
             ),
-        );
-
-
-        $form['questions']['then_i_should_see'] = array(
-            '#type' => 'container'
         );
 
         $form['questions']['then_i_should_see']['click_on_type'] = array(
@@ -267,7 +254,7 @@ function gherkin_generator_form_alter(&$form) {
         $form['filename'] = array(
             '#type' => 'hidden',
             '#name' => 'filename',
-            '#value' => date(time()),
+            '#value' => $filename,
         );
 
 

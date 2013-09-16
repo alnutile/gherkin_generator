@@ -50,7 +50,7 @@
                 $(''+destination+'', context)[method](text);
             }
 
-
+            $('ul.sortable').sortable();
 
             $('#gherkin-generator-node-form').submit(
                 function(e){

@@ -25,6 +25,7 @@ function gherkin_generator_theme(){
     );
 }
 
+
 function gherkin_generator_page_alter(&$page) {
 
     if(arg(2) == 'gherkin-generator' && arg(1) == 'add') {
@@ -51,7 +52,7 @@ function gherkin_generator_form_alter(&$form) {
          * Add CSS / and JS Attributes to form
          */
         $path = drupal_get_path('module', 'gherkin_generator');
-
+        //dpm($form);
 
         //$form['#attributes']['class'][] = 'form-horizontal';
         $form['#attached']['css']['gherkin_generator'] = $path . '/css/gherkin_edit.css';
@@ -65,6 +66,9 @@ function gherkin_generator_form_alter(&$form) {
             '#value' => 'Feature #' . $filename
         );
 
+        $form['actions']['#attributes'] = array('class' => array('hidden'));
+        $form['additional_settings']['#type'] = 'fieldset';
+        $form['additional_settings']['#attributes'] = array('class' => array('hidden'));
 
         $form['existing_test'] = array(
             '#type' => 'container',
@@ -94,21 +98,21 @@ function gherkin_generator_form_alter(&$form) {
         $form['existing_test']['actions']['run_test'] = array(
             '#type' => 'button',
             '#name' => 'run_test',
-            '#value' => t('Run test'),
+            '#value' => t('Run Test'),
             '#attributes' => array('class' => array('btn-success', 'disabled')),
         );
 
         $form['existing_test']['actions']['save_test'] = array(
             '#type' => 'button',
             '#name' => 'save_test',
-            '#value' => 'Save tests',
+            '#value' => 'Save Test',
             '#attributes' => array('class' => array('btn-info', 'disabled')),
         );
 
         $form['existing_test']['actions']['start_over'] = array(
             '#type' => 'button',
             '#name' => 'start_over',
-            '#value' => t('Start over'),
+            '#value' => t('Start Over'),
             '#attributes' => array('class' => array('btn-danger', 'disabled')),
         );
 

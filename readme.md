@@ -10,7 +10,7 @@ Also, if using selenium make sure you run it in the background.
 
 Download the jar file to your computer/server
 
-``bash
+```bash
 curl -O http://selenium.googlecode.com/files/selenium-server-standalone-2.31.0.jar
 ```
 

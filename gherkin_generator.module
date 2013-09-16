@@ -51,7 +51,7 @@ function gherkin_generator_form_alter(&$form) {
          * Add CSS / and JS Attributes to form
          */
         $path = drupal_get_path('module', 'gherkin_generator');
-        dpm($form);
+        //dpm($form);
         //$form['title'] = array('#type' => 'hidden');
         $form['#attributes'] = array(
             //'class' => array('form-horizontal'),
@@ -262,6 +262,12 @@ function gherkin_generator_form_alter(&$form) {
                 'data-value-2' => array('see_not_see_some_text'),
                 'class' => array('steps')
             ),
+        );
+
+        $form['filename'] = array(
+            '#type' => 'hidden',
+            '#name' => 'filename',
+            '#value' => date(time()),
         );
 
 

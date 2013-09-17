@@ -7,6 +7,11 @@ define('GHERKIN_FOLDER', 'gherkin_features');
 
 include_once 'gherkin_generator.features.inc';
 
+
+function gherkin_generator_init() {
+        drupal_add_js(array('gherkin_generator' => array('gherkinGeneratorDefaultPath' => GHERKIN_FOLDER)), 'setting');
+}
+
 function gherkin_generator_permission() {
     return array(
         'run gherkin test' =>  array(

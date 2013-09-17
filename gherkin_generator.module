@@ -149,10 +149,14 @@ function _gherkin_generator_save_to_file($request) {
 
 function _gherkin_linkable_path($module, $filename) {
     $module_path = drupal_get_path('module', $module);
-    return '/' . $module_path . '/' . GHERKIN_FOLDER . '/' . $filename;
+    return $module_path . '/' . GHERKIN_FOLDER . '/' . $filename;
 }
 
-
+/**
+ * @todo this needs to consider non root as well
+ *   eg anonymous user saves to tmp while test run?
+ *   or to allow them to link to it.
+ */
 function _gherkin_save_path($module) {
     $module_path = drupal_get_path('module', $module);
     return  DRUPAL_ROOT . '/' . $module_path . '/' . GHERKIN_FOLDER;

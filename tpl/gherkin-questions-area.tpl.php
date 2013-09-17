@@ -6,6 +6,7 @@
 
 
 <ul class="hidden example-test scenario sortable ui-sortable">
+        <li class="tags"><span class='tag'>@example</span></li>
         <li class="feature">Feature: Example Test for /wiki/Main_Page</li>
         <li class="name">Scenario: WikiPedia</li>
         <li class="url">Given I am on "/wiki/Main_Page"</li>

@@ -2,7 +2,12 @@
   ul.sortable {
     list-style: none;
   }
-
+  .scenario {
+    li {
+      font-size: 18px;
+      line-height: 24px;
+    }
+  }
   label, .qualifier {
     font-size: 18px;
   }

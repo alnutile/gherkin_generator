@@ -34,10 +34,11 @@
                 var items = scenario.length;
                 var scenario_array = new Array()
                 for(var i = 0; i < items; i++) {
-                    scenario_array[i] =$(scenario[i]).text();
+                    scenario_array[i] = $(scenario[i]).text();
                 }
 
                 var filename = $('input[name=filename]').val();
+                console.log("File name" + filename);
                 var parameters = {
                     "scenario[]": scenario_array,
                     "filename": filename

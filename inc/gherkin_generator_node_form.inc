@@ -11,6 +11,9 @@ function _gherkin_generator_node_form(&$form) {
     $form['#attached']['js']['gherkin_generator_run'] = $path . '/js/gherkin_save.js';
     drupal_add_library('system', 'ui.sortable');
 
+    dpm(file_build_uri($path));
+    dpm(file_prepare_directory($path, FILE_CREATE_DIRECTORY));
+
     $filename = REQUEST_TIME;
 
     $form['title'] = array(
@@ -70,16 +73,17 @@ function _gherkin_generator_node_form(&$form) {
 
     $modules_with_folders = gherkin_generator_check_for_modules();
     $modules_writable = _gherkin_generator_options_list($modules_with_folders);
-    dpm(system_rebuild_module_data());
 
-    $form['questions']['save_to'] = array(
-        '#type' => 'select',
-        '#name' => 'save_to',
-        '#options' => $modules_writable,
-        '#description' => t('Save file to one of these modules folders'),
-        '#validated' => TRUE,
-        '#suffix' => '<hr>'
-    );
+    if(user_access('save gherkin test')) {
+        $form['questions']['save_to'] = array(
+            '#type' => 'select',
+            '#name' => 'save_to',
+            '#options' => $modules_writable,
+            '#description' => t('Save file to one of these modules folders'),
+            '#validated' => TRUE,
+            '#suffix' => '<hr>'
+        );
+    }
 
     $form['questions']['test_name']['name'] = array(
         '#type' => 'textfield',

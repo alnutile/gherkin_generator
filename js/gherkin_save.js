@@ -23,34 +23,35 @@
                     $('#messages').append(messages);
 
                     if(data.file.error == 0) {
-                        console.log("submit form")
-                        $('form#gherkin-generator-node-form').submit();
+                        //$('form#gherkin-generator-node-form').submit();
                     }
                 }
             };
 
             $('#edit-save-test').click(function(){
-                var scenario = $('ul.scenario:eq(0) li');
-                var items = scenario.length;
-                var scenario_array = new Array()
-                for(var i = 0; i < items; i++) {
-                    scenario_array[i] = $(scenario[i]).text();
-                }
-                if($('#edit-save-to').length == 1) {
-                    var path = $('#edit-save-to option:selected').val();
-                } else {
-                    var path = Drupal.settings.gherkin_generator.gherkinGeneratorDefaultPath;
-                }
-                var filename = $('input[name=filename]').val();
-                var parameters = {
-                    "scenario[]": scenario_array,
-                    "filename": filename,
-                    "path": path
-                };
+                if(!$(this).hasClass('disabled')) {
+                    var scenario = $('ul.scenario:eq(0) li');
+                    var items = scenario.length;
+                    var scenario_array = new Array()
+                    for(var i = 0; i < items; i++) {
+                        scenario_array[i] = $(scenario[i]).text();
+                    }
+                    if($('#edit-save-to').length == 1) {
+                        var path = $('#edit-save-to option:selected').val();
+                    } else {
+                        var path = Drupal.settings.gherkin_generator.gherkinGeneratorDefaultPath;
+                    }
+                    var filename = $('input[name=filename]').val();
+                    var parameters = {
+                        "scenario[]": scenario_array,
+                        "filename": filename,
+                        "path": path
+                    };
 
-                $.post('/admin/gherkin_generator/save', parameters, function(data){
-                    renderMessage(data);
-                }, "json");
+                    $.post('/admin/gherkin_generator/save', parameters, function(data){
+                        renderMessage(data);
+                    }, "json");
+                }
             });
         }
     };

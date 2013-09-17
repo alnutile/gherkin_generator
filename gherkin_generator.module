@@ -128,24 +128,34 @@ function gherkin_generator_form_alter(&$form) {
 
 function _gherkin_generator_save_to_file($request) {
     $feature = _gherkin_generator_parse_questions($request['scenario']);
-    $filename = $request['filename'];
-    $path = file_build_uri("/gherkin_tests/");
-
-    if (!file_prepare_directory($path, FILE_CREATE_DIRECTORY)) {
-        drupal_mkdir($path);
-    }
-
-    $response = file_unmanaged_save_data($feature, $path . '/' . $filename . '.feature', $replace = FILE_EXISTS_REPLACE);
-    $file_url = l('click here', file_create_url($response), array('attributes' => array('target' => '_blank')));
+    $filename = $request['filename'] . '.feature';
+    $module = $request['path'];
+    $full_path = _gherkin_save_path($module);
+    /* Derived from features.admin.inc module */
+    $response = file_put_contents("{$full_path}/{$filename}", $feature);
 
     if($response == FALSE) {
         watchdog('gherkin_generator', "File could not be made.", $variables = array(), $severity = WATCHDOG_ERROR, $link = NULL);
         return array('message' => "Error file could not be save", 'file' => $response, 'error' => '1');
     } else {
+        $gherkin_linkable_path = _gherkin_linkable_path($request['path'], $filename);
+        $url = url($gherkin_linkable_path, $options = array('absolute' => TRUE));
+        $file_url = l('click here', $url, array('attributes' => array('target' => '_blank')));
         $date = format_date(time(), $type = 'medium', $format = '', $timezone = NULL, $langcode = NULL);
-        watchdog('gherkin_generator', "%date File made %name", $variables = array('%date' => $date, '%name' => $response), $severity = WATCHDOG_NOTICE, $link = $file_url);
+        watchdog('gherkin_generator', "%date File made %name", $variables = array('%date' => $date, '%name' => $filename), $severity = WATCHDOG_NOTICE, $link = $file_url);
         return array('message' => t('@date: <br> File created !name to download ', array('@date' => $date, '!name' => $file_url)), 'file' => $response, 'error' => '0');
     }
+}
+
+function _gherkin_linkable_path($module, $filename) {
+    $module_path = drupal_get_path('module', $module);
+    return '/' . $module_path . '/' . GHERKIN_FOLDER . '/' . $filename;
+}
+
+
+function _gherkin_save_path($module) {
+    $module_path = drupal_get_path('module', $module);
+    return  DRUPAL_ROOT . '/' . $module_path . '/' . GHERKIN_FOLDER;
 }
 
 /**

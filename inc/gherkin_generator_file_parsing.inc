@@ -90,7 +90,6 @@ function gherkin_generator_string_tags($string, $parent) {
 
     foreach($options as $key => $value) {
         if(strpos($first_word, $value) !== false) {
-            watchdog('test_parent', print_r($parent, 1));
             return array(
                 'string' => $string,
                 'spaces' => (empty($parent)) ? 0 : 2, /* empty means Feature level else Scenario */

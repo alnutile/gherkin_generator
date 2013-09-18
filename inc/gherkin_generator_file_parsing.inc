@@ -4,30 +4,13 @@
  * @todo this needs to not do count but text
  *   since a test can be numerous scenarios
  * @param $scenario
- * @return string
+ * @return string format of file
  */
 function _gherkin_generator_parse_questions($scenario) {
-    //Need to consider what is in each row so I can parse each string and make the output array
-    //to then pass to the theme function to output the
-    //file.
-    $final_output = '';
-    $count = 0;
     foreach($scenario as $value) {
         if(gherkin_generator_string_type(trim($value))) {
             $scenario_array[] = gherkin_generator_string_type(trim($value));
         }
-//        //Count does not work here since it can be more than one scenario
-//        //need to do simple string review eg
-//        //Feature or Scenario or Keyword
-//        if($count == 1) {
-//            $indent = '  ';
-//        } elseif($count > 1) {
-//            $indent = '    ';
-//        } else {
-//            $indent = '';
-//        }
-//        $final_output = $final_output .  $indent . $value . " \r\n";
-//        $count ++;
     }
     $output = theme('gherkin_generator_create_file', $vars = array('scenario' => $scenario_array));
     return $output;
@@ -100,16 +83,22 @@ function gherkin_generator_string_scenario($string) {
     }
 }
 
+
+/**
+ * @todo make this work
+ */
 function gherkin_generator_string_tags($string) {
     $first_word = _gherkin_generator_pop_first_word($string);
     $options = array('@');
     drupal_alter('gherkin_generator_string_tags', $options);
-    if(in_array($first_word, $options)) {
-        return array(
-            'string' => $string,
-            'spaces' => 0, /* this will really depend on the parent */
-            'new_line' => 0
-        );
+    foreach($options as $key => $value) {
+        if(strpos($first_word, $value) !== false) {
+            return array(
+                'string' => $string,
+                'spaces' => 0, /* this will really depend on the parent */
+                'new_line' => 0
+            );
+        }
     }
 }
 

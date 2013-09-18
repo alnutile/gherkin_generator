@@ -36,9 +36,52 @@ function gherkin_generator_theme(){
                 'params' => NULL
             ),
             'template' => 'tpl/gherkin-questions-area'
+        ),
+        'gherkin_generator_create_file' => array(
+            'variables' => array(
+                'scenario' => NULL,
+            )
+        ),
+        'gherkin_generator_create_html' => array(
+            'variables' => array(
+                'scenario' => NULL,
+            )
         )
     );
 }
+
+function theme_gherkin_generator_create_file($variables) {
+    $scenario = $variables['scenario'];
+    $file = '';
+    foreach($scenario as $key) {
+          $new_line = _gherkin_generator_new_line($key['new_line']);
+          $spaces = _gherkin_generator_spaces($key['spaces']);
+          $file = $file . "{$spaces}" . $key['string'] . "{$new_line}\r\n";
+    }
+    return $file;
+}
+
+function _gherkin_generator_new_line($new_line) {
+    if($new_line == 1) {
+        return "\r\n";
+    } else {
+        return "";
+    }
+}
+
+function _gherkin_generator_spaces($spaces) {
+    $spaces_return = '';
+    for($i = 0; $i <= $spaces; $i++) {
+        $spaces_return = $spaces_return . " ";
+    }
+    return $spaces_return;
+}
+
+
+function theme_gherkin_generator_create_html($array) {
+
+}
+
 
 /**
  * @todo better way to get this info?
@@ -125,8 +168,16 @@ function gherkin_generator_form_alter(&$form) {
     }
 }
 
-
+/**
+ * @param $request
+ *   this is an array keyed as such
+ *     scenario - an array of the scenario lines one line = one array row
+ *     filename -
+ * @return array
+ */
 function _gherkin_generator_save_to_file($request) {
+    //@todo why was this not loaded with info file files[] call?
+    module_load_include('inc', 'gherkin_generator', 'inc/gherkin_generator_file_parsing');
     $feature = _gherkin_generator_parse_questions($request['scenario']);
     $filename = $request['filename'] . '.feature';
     $module = $request['path'];
@@ -161,29 +212,5 @@ function _gherkin_save_path($module) {
     $module_path = drupal_get_path('module', $module);
     return  DRUPAL_ROOT . '/' . $module_path . '/' . GHERKIN_FOLDER;
 }
-
-/**
- * @todo this needs to not do count but text
- *   since a test can be numerous scenarios
- * @param $scenario
- * @return string
- */
-function _gherkin_generator_parse_questions($scenario) {
-    $final_output = '';
-    $count = 0;
-    foreach($scenario as $value) {
-        if($count == 1) {
-            $indent = '  ';
-        } elseif($count > 1) {
-            $indent = '    ';
-        } else {
-            $indent = '';
-        }
-        $final_output = $final_output .  $indent . $value . " \r\n";
-        $count ++;
-    }
-    return $final_output;
-}
-
 
 

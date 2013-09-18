@@ -6,3 +6,4 @@ dependencies[] = node
 dependencies[] = text
 features[features_api][] = api:2
 features[node][] = gherkin_generator
+files[] = inc/gherkin_generator_file_parsing.inc

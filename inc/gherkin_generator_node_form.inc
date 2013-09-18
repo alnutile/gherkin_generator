@@ -2,7 +2,7 @@
 
 
 function _gherkin_generator_node_form(&$form) {
-    global $user;
+
     $path = drupal_get_path('module', 'gherkin_generator');
     //$form['#attributes']['class'][] = 'form-horizontal';
     $form['#attached']['css']['gherkin_generator'] = $path . '/css/gherkin_edit.css';
@@ -10,9 +10,6 @@ function _gherkin_generator_node_form(&$form) {
     $form['#attached']['js']['gherkin_generator_run'] = $path . '/js/gherkin_run.js';
     $form['#attached']['js']['gherkin_generator_run'] = $path . '/js/gherkin_save.js';
     drupal_add_library('system', 'ui.sortable');
-
-    dpm(file_build_uri($path));
-    dpm(file_prepare_directory($path, FILE_CREATE_DIRECTORY));
 
     $filename = REQUEST_TIME;
 

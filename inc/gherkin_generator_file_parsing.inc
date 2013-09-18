@@ -7,9 +7,10 @@
  * @return string format of file
  */
 function _gherkin_generator_parse_questions($scenario) {
+    $scenario_array = array();
     foreach($scenario as $value) {
-        if(gherkin_generator_string_type(trim($value))) {
-            $scenario_array[] = gherkin_generator_string_type(trim($value));
+        if($results = gherkin_generator_string_type(trim($value), $scenario_array)) {
+            $scenario_array[] = $results;
         }
     }
     $output = theme('gherkin_generator_create_file', $vars = array('scenario' => $scenario_array));
@@ -26,15 +27,14 @@ function _gherkin_generator_parse_questions($scenario) {
  *   spaces
  *   new_line
  */
-function gherkin_generator_string_type($string) {
+function gherkin_generator_string_type($string, $parent) {
     $compare = gherkin_generator_string_types();
     foreach($compare as $key) {
-        if ($results = $key($string)) {
+        if ($results = $key($string, $parent)) {
             return $results;
         }
     }
 }
-
 
 /**
  * Breaking this true false parts into separate functions
@@ -56,7 +56,7 @@ function gherkin_generator_string_types() {
  * 3. The description
  * @return array
  */
-function gherkin_generator_string_feature($string) {
+function gherkin_generator_string_feature($string, $parent) {
     $first_word = _gherkin_generator_pop_first_word($string);
     $options = array('Feature:');
     drupal_alter('gherkin_generator_string_feature', $options);
@@ -70,7 +70,7 @@ function gherkin_generator_string_feature($string) {
 }
 
 
-function gherkin_generator_string_scenario($string) {
+function gherkin_generator_string_scenario($string, $parent) {
     $first_word = _gherkin_generator_pop_first_word($string);
     $options = array('Scenario:');
     drupal_alter('gherkin_generator_string_scenario', $options);
@@ -83,26 +83,24 @@ function gherkin_generator_string_scenario($string) {
     }
 }
 
-
-/**
- * @todo make this work
- */
-function gherkin_generator_string_tags($string) {
+function gherkin_generator_string_tags($string, $parent) {
     $first_word = _gherkin_generator_pop_first_word($string);
     $options = array('@');
     drupal_alter('gherkin_generator_string_tags', $options);
+
     foreach($options as $key => $value) {
         if(strpos($first_word, $value) !== false) {
+            watchdog('test_parent', print_r($parent, 1));
             return array(
                 'string' => $string,
-                'spaces' => 0, /* this will really depend on the parent */
+                'spaces' => (empty($parent)) ? 0 : 2, /* empty means Feature level else Scenario */
                 'new_line' => 0
             );
         }
     }
 }
 
-function gherkin_generator_string_steps($string) {
+function gherkin_generator_string_steps($string, $parent) {
     $first_word = _gherkin_generator_pop_first_word($string);
     $options = array('Given', 'When', 'Then', 'And', 'But');
     drupal_alter('gherkin_generator_string_steps', $options);

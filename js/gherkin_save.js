@@ -36,10 +36,12 @@
                     for(var i = 0; i < items; i++) {
                         scenario_array[i] = $(scenario[i]).text();
                     }
+
+                    var path = '';
                     if($('#edit-save-to').length == 1) {
-                        var path = $('#edit-save-to option:selected').val();
+                        path = $('#edit-save-to option:selected').val();
                     } else {
-                        var path = Drupal.settings.gherkin_generator.gherkinGeneratorDefaultPath;
+                        path = Drupal.settings.gherkin_generator.gherkinGeneratorDefaultPath;
                     }
                     var filename = $('input[name=filename]').val();
                     var parameters = {

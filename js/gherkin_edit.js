@@ -12,6 +12,33 @@
                         $('#edit-run-test').removeClass('disabled');
                     }
             };
+            var createOutput = function(leaf_class, sortable, label, data_value, middle_words, data_value2, label_text) {
+                var destination_wrapper = '<li class="' +leaf_class+ '">';      //Apply elements to the Steps area.
+                    destination_wrapper += sortable + '</i>'                    //
+                    destination_wrapper += label;                               //eg Scenario:
+                    destination_wrapper += data_value;
+                    (middle_words.length) ? destination_wrapper += ' ' + middle_words : '';
+                    (data_value2.length) ? destination_wrapper += ' ' + data_value2 : '';
+                    destination_wrapper += closeCheck(label_text);
+                    destination_wrapper += '</li>';
+                return destination_wrapper;
+            }
+
+            var parseSecondWordSetp = function(value, label_text, self) {
+                var data_value2 = '';
+                var middle_words = '';
+                var get_value2 = value;
+                    data_value2 += wrapperCheck(label_text);
+                    data_value2 += $('input[name='+get_value2+']').val();
+                    data_value2 += wrapperCheck(label_text);
+                if($(self).data('middle-words')) {
+                    middle_words = $(self).data('middle-words');
+                }
+                return  {
+                            "data_value2": data_value2,
+                            "middle_words": middle_words
+                };
+            }
 
             var checkIfCanSave = function() {
                 if($('li.feature').text() != 'Feature: Tests for ?'&&
@@ -31,7 +58,7 @@
 
             var sortableQuestion = function(row) {
                 var sortIcon = '<i class="icon-move"> ';
-                if(row != 'name' && row != 'url') {
+                if(row != 'feature') {
                     return sortIcon;
                 } else {
                     return ''
@@ -53,17 +80,14 @@
             };
 
             var renderMessage = function(message, error_type) {
-                var messages = "<div class='alert alert-" + error_type + "'>";         //@todo pull out error = FALSE/TRUE
+                var messages = "<div class='alert alert-" + error_type + "'>";  //@todo pull out error = FALSE/TRUE
                 messages += message;                                            //@todo pull out error type eg error, info, success etc
                 messages += "</div>";
                 $('#messages', context).append(messages);
             };
 
-            var placeSelection = function(text, destination, method, context) {
-                if(method == 'append') {                                        //Really two types of questions
-                    destination = 'ul.scenario'                                 //one that is replaced eg Scenario and URL
-                }                                                               //and one that is append eg "And I follow link x
-                $(''+destination+'', context)[method](text);
+            var placeSelection = function(text, destination, context) {
+                $('ul.scenario', context).append(text);
             };
 
 
@@ -124,28 +148,17 @@
                 var middle_words = '';
 
                 if($(this).data('value-2')) {
-                    var get_value2 = $(this).data('value-2');
-                    data_value2 += wrapperCheck(label_text);
-                    data_value2 += $('input[name='+get_value2+']').val();
-                    data_value2 += wrapperCheck(label_text);
-                    if($(this).data('middle-words')) {
-                        middle_words = $(this).data('middle-words');
-                    }
+                    var results = parseSecondWordSetp($(this).data('value-2'), label_text, this);
+                    data_value2 = results['data_value2'];
+                    middle_words = results['middle_words'];
                 }
+
                 var sortable = sortableQuestion(destination_class);
-                var destination_wrapper = '<li class="' +leaf_class+ '">';      //Apply elements to the Steps area.
-                    destination_wrapper += sortable + '</i>'                    //
-                    destination_wrapper += label;                               //eg Scenario:
-                    destination_wrapper += data_value;
-                    (middle_words.length) ? destination_wrapper += ' ' + middle_words : '';
-                    (data_value2.length) ? destination_wrapper += ' ' + data_value2 : '';
-                    destination_wrapper += closeCheck(label_text);
-                    destination_wrapper += '</li>';
+                var destination_wrapper = createOutput(leaf_class, sortable, label, data_value, middle_words, data_value2, label_text);
 
                 var destination = '.scenario .' +destination_class;
 
-                var method = $(this).data('method');                            //Define the method eg append or replaceWith etc
-                placeSelection(destination_wrapper, destination, method, context);
+                placeSelection(destination_wrapper, destination, context);
                 checkIfCanRun();
                 checkIfCanSave();
             });

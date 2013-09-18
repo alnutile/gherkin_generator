@@ -1,4 +1,4 @@
 css/.sass-cache
 behat/*
-gherkin_features/*.feature
+gherkin_features/1*.feature
 gherkin_features/restults/*.html

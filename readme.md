@@ -8,12 +8,12 @@ of tests so you can arrange the steps as you go.
 This is a key guide [http://docs.behat.org/guides/1.gherkin.html] to get a sense of this format.
 
 Depending on the permissions of the user they can
-1. Run a test and see results
-2. Download the file from the /tmp folder of the system.
-3. Save the file to their modules gherkin_features folder
-4. Save it to a git repository
-5. Edit a file and Run it to verify it is working
-6. Edit a file and save it back to the system or /tmp folder for download.
+ 1. Run a test and see results
+ 2. Download the file from the /tmp folder of the system.
+ 3. Save the file to their modules gherkin_features folder
+ 4. Save it to a git repository
+ 5. Edit a file and Run it to verify it is working
+ 6. Edit a file and save it back to the system or /tmp folder for download.
 
 There will be a submodule that will show how you can connect this to SauceLabs.
 

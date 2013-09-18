@@ -67,7 +67,6 @@ function _gherkin_generator_node_form(&$form) {
     );
 
 
-
     $modules_with_folders = gherkin_generator_check_for_modules();
     $modules_writable = _gherkin_generator_options_list($modules_with_folders);
 

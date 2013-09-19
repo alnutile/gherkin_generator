@@ -41,7 +41,8 @@ function _gherkin_generator_run_test($file_path, $name) {
             $output = _gherkin_generator_run_tests_from_module_folder($file_path, $name);
             return $output;
         } else {
-            _gherkin_generator_run_tests_from_tmp_folder($file_path, $name);
+            $output = _gherkin_generator_run_tests_from_tmp_folder($file_path, $name);
+            return $output;
         }
     }
 }
@@ -100,7 +101,7 @@ function _gherkin_generator_run_tests_from_tmp_folder($file_path, $name) {
         $output = array('message' => t('@date: <br> Test successful!', array('@date' => $date)), 'file' => $results_url, 'error' => FALSE);
     } else {
         watchdog('gherkin_generator', "%date Error Running Test %name", $variables = array('%date' => $date, '%name' => $file_path), $severity = WATCHDOG_ERROR, $link = $file_path);
-        $output = array('message' => t('@date: <br> Error running test !name to download ', array('@date' => $date, '@name' => $file_path)), 'file' => $file, 'error' => TRUE);
+        $output = array('message' => t('@date: <br> Error running test !name to download ', array('@date' => $date, '@name' => $file_path)), 'file' => $results_url, 'error' => TRUE);
     }
 
     return $output;

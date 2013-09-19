@@ -7,6 +7,28 @@ define('GHERKIN_FOLDER', 'gherkin_features');
 
 include_once 'gherkin_generator.features.inc';
 
+function gherkin_generator_library() {
+    $path = drupal_get_path('module', 'gherkin_generator');
+    $libraries['tag_it'] = array(
+        'title' => 'jQuery Tagp-it',
+        'website' => "http://aehlke.github.io/tag-it/",
+        'version' => '2.0-x',
+        'js' => array(
+            $path . '/libraries/tag-it/js/tag-it.js' => array(),
+        ),
+        'css' => array(
+            $path . '/libraries/tag-it/css/jquery.tagit.css' => array(
+                'type' => 'file',
+                'media' => 'screen'
+            ),
+            $path . '/libraries/tag-it/css/tagit.ui-zendesk.css' => array(
+                'type' => 'file',
+                'media' => 'screen'
+            )
+        )
+    );
+    return $libraries;
+}
 
 function gherkin_generator_init() {
         drupal_add_js(array('gherkin_generator' => array('gherkinGeneratorDefaultPath' => file_directory_temp())), 'setting');
@@ -55,8 +77,9 @@ function theme_gherkin_generator_create_file($variables) {
     $file = '';
     foreach($scenario as $key) {
           $new_line = _gherkin_generator_new_line($key['new_line']);
+          $new_line_above = _gherkin_generator_new_line($key['new_line_above']);
           $spaces = _gherkin_generator_spaces($key['spaces']);
-          $file = $file . "{$spaces}" . $key['string'] . "{$new_line}\r\n";
+          $file = $file . "{$new_line_above}" . "{$spaces}" . $key['string'] . "{$new_line}\r\n";
     }
     return $file;
 }
@@ -163,6 +186,7 @@ function gherkin_generator_menu() {
 function gherkin_generator_form_alter(&$form) {
     if($form['#form_id'] == 'gherkin_generator_node_form') {
         // move to it's own file to keep this fall shorter
+        drupal_add_library('gherkin_generator', 'tag_it') ;
         module_load_include('inc', 'gherkin_generator', 'inc/gherkin_generator_node_form');
         _gherkin_generator_node_form($form);
     }
@@ -185,33 +209,48 @@ function _gherkin_generator_save_to_file($request) {
     //@todo DRY this up for either type of user and repsonse
     if (user_access('save gherkin test')) {
         /* Derived from features.admin.inc module */
-        $full_path = _gherkin_save_path($module);
-        $response = file_put_contents("{$full_path}/{$filename}", $feature);
-        if($response == FALSE) {
-            watchdog('gherkin_generator', "File could not be made.", $variables = array(), $severity = WATCHDOG_ERROR, $link = NULL);
-            return array('message' => "Error file could not be save", 'file' => $response, 'error' => '1');
-        } else {
-            $gherkin_linkable_path = _gherkin_linkable_path($request['path'], $filename);
-            $url = url($gherkin_linkable_path, $options = array('absolute' => TRUE));
-            $file_url = l('click here', $url, array('attributes' => array('target' => '_blank', 'id' => array('test-file'))));
-            $date = format_date(time(), $type = 'medium', $format = '', $timezone = NULL, $langcode = NULL);
-            watchdog('gherkin_generator', "%date File made %name", $variables = array('%date' => $date, '%name' => $filename), $severity = WATCHDOG_NOTICE, $link = $file_url);
-            return array('message' => t('@date: <br> File created !name to download ', array('@date' => $date, '!name' => $file_url)), 'file' => $response, 'error' => '0');
-        }
+        $output = _gherkin_generator_process_file_in_module_folder($module, $filename, $feature, $request);
+        return $output;
     } else {
-        $path = file_build_uri("/gherkin_tests/");
-        $response = file_unmanaged_save_data($feature, $path . '/' . $filename . '.feature', $replace = FILE_EXISTS_REPLACE);
-        if($response == FALSE) {
-            watchdog('gherkin_generator', "File could not be made.", $variables = array(), $severity = WATCHDOG_ERROR, $link = NULL);
-            return array('message' => "Error file could not be save", 'file' => $response, 'error' => '1');
-        } else {
-            $file_url = l('click here', file_create_url($response), array('attributes' => array('target' => '_blank', 'id' => array('test-file'))));
-            $date = format_date(time(), $type = 'medium', $format = '', $timezone = NULL, $langcode = NULL);
-            watchdog('gherkin_generator', "%date File made %name", $variables = array('%date' => $date, '%name' => $response), $severity = WATCHDOG_NOTICE, $link = $file_url);
-            return array('message' => t('@date: <br> File created !name to download ', array('@date' => $date, '!name' => $file_url)), 'file' => $response, 'error' => '0');
-        }
+        $output = _gherkin_generator_process_file_in_tmp($filename, $feature);
+        return $output;
     }
 }
+
+
+function _gherkin_generator_process_file_in_module_folder($module, $filename, $feature, $request) {
+    $full_path = _gherkin_save_path($module);
+    $response = file_put_contents("{$full_path}/{$filename}", $feature);
+    if($response == FALSE) {
+        watchdog('gherkin_generator', "File could not be made.", $variables = array(), $severity = WATCHDOG_ERROR, $link = NULL);
+        $output = array('message' => "Error file could not be save", 'file' => $response, 'error' => '1');
+    } else {
+        $gherkin_linkable_path = _gherkin_linkable_path($request['path'], $filename);
+        $url = url($gherkin_linkable_path, $options = array('absolute' => TRUE));
+        $file_url = l('click here', $url, array('attributes' => array('target' => '_blank', 'id' => array('test-file'))));
+        $date = format_date(time(), $type = 'medium', $format = '', $timezone = NULL, $langcode = NULL);
+        watchdog('gherkin_generator', "%date File made %name", $variables = array('%date' => $date, '%name' => $filename), $severity = WATCHDOG_NOTICE, $link = $file_url);
+        $output =  array('message' => t('@date: <br> File created !name to download ', array('@date' => $date, '!name' => $file_url)), 'file' => $response, 'error' => '0');
+    }
+
+    return $output;
+}
+
+function _gherkin_generator_process_file_in_tmp($filename, $feature) {
+    $path = file_build_uri("/gherkin_tests/");
+    $response = file_unmanaged_save_data($feature, $path . '/' . $filename . '.feature', $replace = FILE_EXISTS_REPLACE);
+    if($response == FALSE) {
+        watchdog('gherkin_generator', "File could not be made.", $variables = array(), $severity = WATCHDOG_ERROR, $link = NULL);
+        $output = array('message' => "Error file could not be save", 'file' => $response, 'error' => '1');
+    } else {
+        $file_url = l('click here', file_create_url($response), array('attributes' => array('target' => '_blank', 'id' => array('test-file'))));
+        $date = format_date(time(), $type = 'medium', $format = '', $timezone = NULL, $langcode = NULL);
+        watchdog('gherkin_generator', "%date File made %name", $variables = array('%date' => $date, '%name' => $response), $severity = WATCHDOG_NOTICE, $link = $file_url);
+        $output = array('message' => t('@date: <br> File created !name to download ', array('@date' => $date, '!name' => $file_url)), 'file' => $response, 'error' => '0');
+    }
+    return $output;
+}
+
 
 /**
  * if user is not logged in or not allowed
@@ -242,6 +281,20 @@ function _gherkin_linkable_path($module, $filename) {
 function _gherkin_save_path($module) {
     $module_path = drupal_get_path('module', $module);
     return  DRUPAL_ROOT . '/' . $module_path . '/' . GHERKIN_FOLDER;
+}
+
+function template_preprocess_gherkin_questions_area(&$variables) {
+
+    $variables['features_tags_value'] = array(
+        '#type' => 'hidden',
+        '#attributes' => array(
+            'id' => 'features-tagit-values',
+        ),
+        '#name' => 'features-tag-value',
+    );
+    $variables['features_tags_input'] = array(
+        '#markup' => "<ul id='features-tagit-input'></ul><div class='help-block'>Start each tag with @. Just separate by comma for more than one tags. Tags can not have spaces.</div>"
+    );
 }
 
 

@@ -2,9 +2,16 @@
  * @todo validation disable button when min requirements are not met on form
  */
 (function ($) {
+    Drupal.theme.prototype.tagItWrapper  = function(id) {
+        var wrapper =  "<li class='tag'><input id='scenario-values-" + id + "' class='section-tag' type='hidden'></li>";
+            wrapper += "<li class='ignore'><i class='icon-move pull-left'></i><ul id='scenario-input-"+id+"'></ul></li>";
+        return wrapper;
+    };
 
     Drupal.behaviors.gherkin_generator_edit = {
         attach: function (context) {
+
+
             var checkIfCanRun = function() {
                 if($('li.feature').text() != 'Feature: Tests for ?'&&
                     $('li.scenario').text() != 'Scenario: Fill in a name below...')
@@ -12,8 +19,16 @@
                         $('#edit-run-test').removeClass('disabled');
                     }
             };
+
             var createOutput = function(leaf_class, sortable, label, data_value, middle_words, data_value2, label_text) {
-                var destination_wrapper = '<li class="' +leaf_class+ '">';      //Apply elements to the Steps area.
+                var data_field = '';
+                var destination_wrapper = '';
+                    if(leaf_class == 'name') {
+                        var id = new Date().getTime();
+                        destination_wrapper += Drupal.theme('tagItWrapper', id);
+                        data_field = 'data-scenario-tag-box="' + id + '"';
+                    }
+                    destination_wrapper += '<li class="' +leaf_class+ '" ' + data_field + '>';      //Apply elements to the Steps area.
                     destination_wrapper += sortable + '</i>'                    //
                     destination_wrapper += label;                               //eg Scenario:
                     destination_wrapper += data_value;
@@ -22,7 +37,7 @@
                     destination_wrapper += closeCheck(label_text);
                     destination_wrapper += '</li>';
                 return destination_wrapper;
-            }
+            };
 
             var parseSecondWordSetp = function(value, label_text, self) {
                 var data_value2 = '';
@@ -38,14 +53,6 @@
                             "data_value2": data_value2,
                             "middle_words": middle_words
                 };
-            }
-
-            var checkIfCanSave = function() {
-                if($('li.feature').text() != 'Feature: Tests for ?'&&
-                    $('li.scenario').text() != 'Scenario: Fill in a name below...')
-                {
-                    $('#edit-save-test').removeClass('disabled');
-                }
             };
 
             var wrapperCheck = function(label_text) {
@@ -87,10 +94,11 @@
             };
 
             var placeSelection = function(text, destination, context) {
-                $('ul.scenario', context).append(text);
+                $('ul.scenario', context).append(text).applyTagIts('@scenario_tag', 'scenario');
             };
 
 
+            /* offer an example */
             $('a.example-test-load', context).click(function(){
                 var example = $('ul.example-test').html();
                 var message = "You just loaded a test for Wikipedia click Run Test to see it start";
@@ -160,14 +168,16 @@
 
                 placeSelection(destination_wrapper, destination, context);
                 checkIfCanRun();
-                checkIfCanSave();
             });
        }
     };
 
-    $(document).ready(function() {                                              //@todo see why on did not work
-        $('i.remove').live('click', function(){                                 //then see why it did not work as a behavior?
-            $(this).parent('li').remove();
+    $(document).ready(function() {
+        $('#features-tagit-input').applyTagIts('@feature_tag', 'feature');
+
+
+        $('i.remove').live('click', function(){                                 //@todo see why on did not work
+            $(this).parent('li').remove();                                      //then see why it did not work as a behavior?
         });
 
     });

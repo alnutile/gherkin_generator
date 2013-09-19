@@ -30,11 +30,16 @@
 
             $('#edit-save-test').click(function(){
                 if(!$(this).hasClass('disabled')) {
-                    var scenario = $('ul.scenario:eq(0) li');
+                    var scenario = $('ul.scenario:eq(0) > li').not('.ignore');
                     var items = scenario.length;
                     var scenario_array = new Array()
                     for(var i = 0; i < items; i++) {
-                        scenario_array[i] = $(scenario[i]).text();
+                        if($(scenario[i]).hasClass('tag')) {
+                            var tags = $('input', scenario[i]).val();
+                            scenario_array[i] = tags;
+                        } else {
+                            scenario_array[i] = $(scenario[i]).text();
+                        }
                     }
 
                     var path = '';

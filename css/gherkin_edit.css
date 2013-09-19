@@ -3,6 +3,8 @@
 .node-gherkin_generator-form .scenario li {
   font-size: 18px;
   line-height: 24px; }
+  .node-gherkin_generator-form .scenario li div.help-block {
+    font-size: 10px; }
 .node-gherkin_generator-form label, .node-gherkin_generator-form .qualifier {
   font-size: 18px; }
 

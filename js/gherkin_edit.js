@@ -2,13 +2,29 @@
  * @todo validation disable button when min requirements are not met on form
  */
 (function ($) {
-    Drupal.theme.prototype.tagItWrapper  = function() {
-        var wrapper =  "Tag:<li class='tag'><input class='section-tag'></li>";
+    Drupal.theme.prototype.tagItWrapper  = function(id) {
+        var wrapper =  "<li class='tag'><input id='scenario-values-" + id + "' class='section-tag' type='hidden'></li>";
+            wrapper += "<li class='ignore'><i class='icon-move'></i><ul id='scenario-input-"+id+"'></ul></li>";
         return wrapper;
     };
 
     Drupal.behaviors.gherkin_generator_edit = {
         attach: function (context) {
+            var applyTagIts = function(context) {
+                if($('li.name', context).length) {
+                    console.log(this);
+                    $('li.name', context).each(function(){
+                        var id = $(this).data('scenario-tag-box');
+                        console.log("Here is the id " + id);
+                        $('#scenario-input-'+id+'', context).tagit({
+                            singleField: true,
+                            singleFieldNode: $('#scenario-values-'+id+''),
+                            placeholderText: "@scenario_tag"
+                        });
+                    });
+                };
+            };
+
             var checkIfCanRun = function() {
                 if($('li.feature').text() != 'Feature: Tests for ?'&&
                     $('li.scenario').text() != 'Scenario: Fill in a name below...')
@@ -16,8 +32,17 @@
                         $('#edit-run-test').removeClass('disabled');
                     }
             };
+
             var createOutput = function(leaf_class, sortable, label, data_value, middle_words, data_value2, label_text) {
-                var destination_wrapper = '<li class="' +leaf_class+ '">';      //Apply elements to the Steps area.
+                var data_field = '';
+                var destination_wrapper = '';
+                    if(leaf_class == 'name') {
+                        var id = new Date().getTime();
+                        destination_wrapper += Drupal.theme('tagItWrapper', id);
+                        //Add a unique data attribute to the following li as well
+                        data_field = 'data-scenario-tag-box="' + id + '"';
+                    }
+                    destination_wrapper += '<li class="' +leaf_class+ '" ' + data_field + '>';      //Apply elements to the Steps area.
                     destination_wrapper += sortable + '</i>'                    //
                     destination_wrapper += label;                               //eg Scenario:
                     destination_wrapper += data_value;
@@ -26,7 +51,7 @@
                     destination_wrapper += closeCheck(label_text);
                     destination_wrapper += '</li>';
                 return destination_wrapper;
-            }
+            };
 
             var parseSecondWordSetp = function(value, label_text, self) {
                 var data_value2 = '';
@@ -42,7 +67,7 @@
                             "data_value2": data_value2,
                             "middle_words": middle_words
                 };
-            }
+            };
 
             var checkIfCanSave = function() {
                 if($('li.feature').text() != 'Feature: Tests for ?'&&
@@ -94,7 +119,7 @@
                 $('ul.scenario', context).append(text);
             };
 
-
+            /* offer an example */
             $('a.example-test-load', context).click(function(){
                 var example = $('ul.example-test').html();
                 var message = "You just loaded a test for Wikipedia click Run Test to see it start";
@@ -165,6 +190,7 @@
                 placeSelection(destination_wrapper, destination, context);
                 checkIfCanRun();
                 checkIfCanSave();
+                applyTagIts(context);
             });
        }
     };
@@ -176,6 +202,7 @@
                 singleFieldNode: $('#features-tagit-values')
             }
         );
+
 
         $('i.remove').live('click', function(){                                 //@todo see why on did not work
             $(this).parent('li').remove();                                      //then see why it did not work as a behavior?

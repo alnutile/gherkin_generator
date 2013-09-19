@@ -7,6 +7,24 @@ define('GHERKIN_FOLDER', 'gherkin_features');
 
 include_once 'gherkin_generator.features.inc';
 
+function gherkin_generator_library() {
+    $path = drupal_get_path('module', 'gherkin_generator');
+    $libraries['tag_it'] = array(
+        'title' => 'jQuery Tagp-it',
+        'website' => "http://aehlke.github.io/tag-it/",
+        'version' => '2.0-x',
+        'js' => array(
+            $path . '/libraries/tag-it/js/tag-it.js' => array(),
+        ),
+        'css' => array(
+            $path . '/libraries/tag-it/css/jquery.tagit.css' => array(
+                'type' => 'file',
+                'media' => 'screen'
+            )
+        )
+    );
+    return $libraries;
+}
 
 function gherkin_generator_init() {
         drupal_add_js(array('gherkin_generator' => array('gherkinGeneratorDefaultPath' => file_directory_temp())), 'setting');
@@ -163,6 +181,7 @@ function gherkin_generator_menu() {
 function gherkin_generator_form_alter(&$form) {
     if($form['#form_id'] == 'gherkin_generator_node_form') {
         // move to it's own file to keep this fall shorter
+        drupal_add_library('gherkin_generator', 'tag_it') ;
         module_load_include('inc', 'gherkin_generator', 'inc/gherkin_generator_node_form');
         _gherkin_generator_node_form($form);
     }
@@ -242,6 +261,20 @@ function _gherkin_linkable_path($module, $filename) {
 function _gherkin_save_path($module) {
     $module_path = drupal_get_path('module', $module);
     return  DRUPAL_ROOT . '/' . $module_path . '/' . GHERKIN_FOLDER;
+}
+
+function template_preprocess_gherkin_questions_area(&$variables) {
+
+    $variables['features_tags_value'] = array(
+        '#type' => 'hidden',
+        '#attributes' => array(
+            'id' => 'features-tagit-values'
+        ),
+        '#name' => 'features-tag-value',
+    );
+    $variables['features_tags_input'] = array(
+        '#markup' => "<ul id='features-tagit-input'></ul><div class='help-block'>Start each tag with @. Just separate by comma for more than one tags. Tags can not have spaces.</div>"
+    );
 }
 
 

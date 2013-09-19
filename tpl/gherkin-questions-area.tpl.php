@@ -6,6 +6,11 @@ a language to aid in software development and testing. The idea came from <a hre
 </div>
 <hr>
 <ul class="scenario sortable">
+    <li id="feature-tags">
+        <strong>Feature Tags:</strong>
+            <?php print render($features_tags_value); ?>
+            <?php print render($features_tags_input); ?>
+    </li>
     <li class="feature">Feature: Tests for ?</li>
     <li class="name">Scenario: Fill in a name below...</li>
     <li class="url">Given I am on "?"</li>

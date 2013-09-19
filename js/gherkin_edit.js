@@ -2,6 +2,13 @@
  * @todo validation disable button when min requirements are not met on form
  */
 (function ($) {
+    Drupal.theme.prototype.tagItWrapper  = function() {
+        var wrapper =  "<div><strong>Tag:</strong><span class='s-tag'>";
+            wrapper += "<input class='s-tags input-large ui-widget-content ui-autocomplete-input' ";
+            wrapper += "autocomplete='off' role='textbox' aria-autocomplete='list' aria-haspopup='true'>";
+            wrapper += '</span></div>';
+        return wrapper;
+    };
 
     Drupal.behaviors.gherkin_generator_edit = {
         attach: function (context) {
@@ -165,9 +172,16 @@
        }
     };
 
-    $(document).ready(function() {                                              //@todo see why on did not work
-        $('i.remove').live('click', function(){                                 //then see why it did not work as a behavior?
-            $(this).parent('li').remove();
+    $(document).ready(function() {
+        $('#features-tagit-input').tagit(
+            {
+                singleField: true,
+                singleFieldNode: $('#features-tagit-values')
+            }
+        );
+
+        $('i.remove').live('click', function(){                                 //@todo see why on did not work
+            $(this).parent('li').remove();                                      //then see why it did not work as a behavior?
         });
 
     });

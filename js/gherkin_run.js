@@ -49,11 +49,17 @@
                 for(var i = 0; i < items; i++) {
                     scenario_array[i] =$(scenario[i]).text();
                 }
-
+                var path = '';
+                if($('#edit-save-to').length == 1) {
+                    path = $('#edit-save-to option:selected').val();
+                } else {
+                    path = Drupal.settings.gherkin_generator.gherkinGeneratorDefaultPath;
+                }
                 var filename = $('input[name=filename]').val();
                 var parameters = {
                     "scenario[]": scenario_array,
-                    "filename": filename
+                    "filename": filename,
+                    "path": path
                 };
                 $.post('/admin/gherkin_generator/run', parameters, function(data){
                         renderMessage(data);

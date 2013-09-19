@@ -12,8 +12,6 @@ function _gherkin_generator_parse_questions($scenario) {
     foreach($scenario as $value) {
         if($results = gherkin_generator_string_type(trim($value), $scenario, $count)) {
             //@todo DRY this up of separate
-            watchdog('test_results', print_r($results, 1));
-            watchdog('test_results_count', count($results));
             if(count($results) < 3) {
                 foreach($results as $row) {
                     if($row) {
@@ -138,7 +136,8 @@ function gherkin_generator_string_steps($string, $parent) {
         return array(
             'string' => $string,
             'spaces' => 4,
-            'new_line' => 0
+            'new_line' => 0,
+            'new_line_above' => 0
         );
     }
 }

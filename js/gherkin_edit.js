@@ -26,7 +26,6 @@
                     if(leaf_class == 'name') {
                         var id = new Date().getTime();
                         destination_wrapper += Drupal.theme('tagItWrapper', id);
-                        //Add a unique data attribute to the following li as well
                         data_field = 'data-scenario-tag-box="' + id + '"';
                     }
                     destination_wrapper += '<li class="' +leaf_class+ '" ' + data_field + '>';      //Apply elements to the Steps area.
@@ -54,14 +53,6 @@
                             "data_value2": data_value2,
                             "middle_words": middle_words
                 };
-            };
-
-            var checkIfCanSave = function() {
-                if($('li.feature').text() != 'Feature: Tests for ?'&&
-                    $('li.scenario').text() != 'Scenario: Fill in a name below...')
-                {
-                    $('#edit-save-test').removeClass('disabled');
-                }
             };
 
             var wrapperCheck = function(label_text) {
@@ -105,6 +96,7 @@
             var placeSelection = function(text, destination, context) {
                 $('ul.scenario', context).append(text).applyTagIts('@scenario_tag', 'scenario');
             };
+
 
             /* offer an example */
             $('a.example-test-load', context).click(function(){
@@ -176,7 +168,6 @@
 
                 placeSelection(destination_wrapper, destination, context);
                 checkIfCanRun();
-                checkIfCanSave();
             });
        }
     };

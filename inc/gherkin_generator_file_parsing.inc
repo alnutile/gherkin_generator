@@ -8,6 +8,7 @@
  */
 function _gherkin_generator_parse_questions($scenario) {
     $scenario_array = array();
+
     foreach($scenario as $value) {
         if($results = gherkin_generator_string_type(trim($value), $scenario_array)) {
             $scenario_array[] = $results;
@@ -87,9 +88,9 @@ function gherkin_generator_string_tags($string, $parent) {
     $first_word = _gherkin_generator_pop_first_word($string);
     $options = array('@');
     drupal_alter('gherkin_generator_string_tags', $options);
-
     foreach($options as $key => $value) {
         if(strpos($first_word, $value) !== false) {
+            $string = str_replace(',', ' ', $string);
             return array(
                 'string' => $string,
                 'spaces' => (empty($parent)) ? 0 : 2, /* empty means Feature level else Scenario */

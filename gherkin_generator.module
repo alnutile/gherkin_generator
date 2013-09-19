@@ -268,7 +268,7 @@ function template_preprocess_gherkin_questions_area(&$variables) {
     $variables['features_tags_value'] = array(
         '#type' => 'hidden',
         '#attributes' => array(
-            'id' => 'features-tagit-values'
+            'id' => 'features-tagit-values',
         ),
         '#name' => 'features-tag-value',
     );

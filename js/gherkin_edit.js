@@ -3,10 +3,7 @@
  */
 (function ($) {
     Drupal.theme.prototype.tagItWrapper  = function() {
-        var wrapper =  "<div><strong>Tag:</strong><span class='s-tag'>";
-            wrapper += "<input class='s-tags input-large ui-widget-content ui-autocomplete-input' ";
-            wrapper += "autocomplete='off' role='textbox' aria-autocomplete='list' aria-haspopup='true'>";
-            wrapper += '</span></div>';
+        var wrapper =  "Tag:<li class='tag'><input class='section-tag'></li>";
         return wrapper;
     };
 

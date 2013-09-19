@@ -44,9 +44,9 @@ Feature: Making tests and saving files
     Then I should see "Scenario: WikiPedia"
     Then I should not see "This is a tool to help"
 
-  @thisone @anonymous
-  Scenario: Should be able to add tags to a feature
-    Given I am on "/node/add/gherkin-generator"
-    Then I should see "Tag"
-    And I fill in "feature-tag" with "@tag1"
-    Then I should see "@tag1"
+#  @thisone @anonymous
+#  Scenario: Should be able to add tags to a feature
+#    Given I am on "/node/add/gherkin-generator"
+#    Then I should see "Tag"
+#    And I fill in "ui-widget-content" with "@tag1"
+#    Then I should see "@tag1"

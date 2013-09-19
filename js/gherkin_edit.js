@@ -4,26 +4,13 @@
 (function ($) {
     Drupal.theme.prototype.tagItWrapper  = function(id) {
         var wrapper =  "<li class='tag'><input id='scenario-values-" + id + "' class='section-tag' type='hidden'></li>";
-            wrapper += "<li class='ignore'><i class='icon-move'></i><ul id='scenario-input-"+id+"'></ul></li>";
+            wrapper += "<li class='ignore'><i class='icon-move pull-left'></i><ul id='scenario-input-"+id+"'></ul></li>";
         return wrapper;
     };
 
     Drupal.behaviors.gherkin_generator_edit = {
         attach: function (context) {
-            var applyTagIts = function(context) {
-                if($('li.name', context).length) {
-                    console.log(this);
-                    $('li.name', context).each(function(){
-                        var id = $(this).data('scenario-tag-box');
-                        console.log("Here is the id " + id);
-                        $('#scenario-input-'+id+'', context).tagit({
-                            singleField: true,
-                            singleFieldNode: $('#scenario-values-'+id+''),
-                            placeholderText: "@scenario_tag"
-                        });
-                    });
-                };
-            };
+
 
             var checkIfCanRun = function() {
                 if($('li.feature').text() != 'Feature: Tests for ?'&&
@@ -116,7 +103,7 @@
             };
 
             var placeSelection = function(text, destination, context) {
-                $('ul.scenario', context).append(text);
+                $('ul.scenario', context).append(text).applyTagIts('@scenario_tag', 'scenario');
             };
 
             /* offer an example */
@@ -190,18 +177,12 @@
                 placeSelection(destination_wrapper, destination, context);
                 checkIfCanRun();
                 checkIfCanSave();
-                applyTagIts(context);
             });
        }
     };
 
     $(document).ready(function() {
-        $('#features-tagit-input').tagit(
-            {
-                singleField: true,
-                singleFieldNode: $('#features-tagit-values')
-            }
-        );
+        $('#features-tagit-input').applyTagIts('@feature_tag', 'feature');
 
 
         $('i.remove').live('click', function(){                                 //@todo see why on did not work

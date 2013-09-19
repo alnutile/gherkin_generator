@@ -20,6 +20,10 @@ function gherkin_generator_library() {
             $path . '/libraries/tag-it/css/jquery.tagit.css' => array(
                 'type' => 'file',
                 'media' => 'screen'
+            ),
+            $path . '/libraries/tag-it/css/tagit.ui-zendesk.css' => array(
+                'type' => 'file',
+                'media' => 'screen'
             )
         )
     );
@@ -73,8 +77,9 @@ function theme_gherkin_generator_create_file($variables) {
     $file = '';
     foreach($scenario as $key) {
           $new_line = _gherkin_generator_new_line($key['new_line']);
+          $new_line_above = _gherkin_generator_new_line($key['new_line_above']);
           $spaces = _gherkin_generator_spaces($key['spaces']);
-          $file = $file . "{$spaces}" . $key['string'] . "{$new_line}\r\n";
+          $file = $file . "{$new_line_above}" . "{$spaces}" . $key['string'] . "{$new_line}\r\n";
     }
     return $file;
 }
@@ -204,33 +209,48 @@ function _gherkin_generator_save_to_file($request) {
     //@todo DRY this up for either type of user and repsonse
     if (user_access('save gherkin test')) {
         /* Derived from features.admin.inc module */
-        $full_path = _gherkin_save_path($module);
-        $response = file_put_contents("{$full_path}/{$filename}", $feature);
-        if($response == FALSE) {
-            watchdog('gherkin_generator', "File could not be made.", $variables = array(), $severity = WATCHDOG_ERROR, $link = NULL);
-            return array('message' => "Error file could not be save", 'file' => $response, 'error' => '1');
-        } else {
-            $gherkin_linkable_path = _gherkin_linkable_path($request['path'], $filename);
-            $url = url($gherkin_linkable_path, $options = array('absolute' => TRUE));
-            $file_url = l('click here', $url, array('attributes' => array('target' => '_blank', 'id' => array('test-file'))));
-            $date = format_date(time(), $type = 'medium', $format = '', $timezone = NULL, $langcode = NULL);
-            watchdog('gherkin_generator', "%date File made %name", $variables = array('%date' => $date, '%name' => $filename), $severity = WATCHDOG_NOTICE, $link = $file_url);
-            return array('message' => t('@date: <br> File created !name to download ', array('@date' => $date, '!name' => $file_url)), 'file' => $response, 'error' => '0');
-        }
+        $output = _gherkin_generator_process_file_in_module_folder($module, $filename, $feature, $request);
+        return $output;
     } else {
-        $path = file_build_uri("/gherkin_tests/");
-        $response = file_unmanaged_save_data($feature, $path . '/' . $filename . '.feature', $replace = FILE_EXISTS_REPLACE);
-        if($response == FALSE) {
-            watchdog('gherkin_generator', "File could not be made.", $variables = array(), $severity = WATCHDOG_ERROR, $link = NULL);
-            return array('message' => "Error file could not be save", 'file' => $response, 'error' => '1');
-        } else {
-            $file_url = l('click here', file_create_url($response), array('attributes' => array('target' => '_blank', 'id' => array('test-file'))));
-            $date = format_date(time(), $type = 'medium', $format = '', $timezone = NULL, $langcode = NULL);
-            watchdog('gherkin_generator', "%date File made %name", $variables = array('%date' => $date, '%name' => $response), $severity = WATCHDOG_NOTICE, $link = $file_url);
-            return array('message' => t('@date: <br> File created !name to download ', array('@date' => $date, '!name' => $file_url)), 'file' => $response, 'error' => '0');
-        }
+        $output = _gherkin_generator_process_file_in_tmp($filename, $feature);
+        return $output;
     }
 }
+
+
+function _gherkin_generator_process_file_in_module_folder($module, $filename, $feature, $request) {
+    $full_path = _gherkin_save_path($module);
+    $response = file_put_contents("{$full_path}/{$filename}", $feature);
+    if($response == FALSE) {
+        watchdog('gherkin_generator', "File could not be made.", $variables = array(), $severity = WATCHDOG_ERROR, $link = NULL);
+        $output = array('message' => "Error file could not be save", 'file' => $response, 'error' => '1');
+    } else {
+        $gherkin_linkable_path = _gherkin_linkable_path($request['path'], $filename);
+        $url = url($gherkin_linkable_path, $options = array('absolute' => TRUE));
+        $file_url = l('click here', $url, array('attributes' => array('target' => '_blank', 'id' => array('test-file'))));
+        $date = format_date(time(), $type = 'medium', $format = '', $timezone = NULL, $langcode = NULL);
+        watchdog('gherkin_generator', "%date File made %name", $variables = array('%date' => $date, '%name' => $filename), $severity = WATCHDOG_NOTICE, $link = $file_url);
+        $output =  array('message' => t('@date: <br> File created !name to download ', array('@date' => $date, '!name' => $file_url)), 'file' => $response, 'error' => '0');
+    }
+
+    return $output;
+}
+
+function _gherkin_generator_process_file_in_tmp($filename, $feature) {
+    $path = file_build_uri("/gherkin_tests/");
+    $response = file_unmanaged_save_data($feature, $path . '/' . $filename . '.feature', $replace = FILE_EXISTS_REPLACE);
+    if($response == FALSE) {
+        watchdog('gherkin_generator', "File could not be made.", $variables = array(), $severity = WATCHDOG_ERROR, $link = NULL);
+        $output = array('message' => "Error file could not be save", 'file' => $response, 'error' => '1');
+    } else {
+        $file_url = l('click here', file_create_url($response), array('attributes' => array('target' => '_blank', 'id' => array('test-file'))));
+        $date = format_date(time(), $type = 'medium', $format = '', $timezone = NULL, $langcode = NULL);
+        watchdog('gherkin_generator', "%date File made %name", $variables = array('%date' => $date, '%name' => $response), $severity = WATCHDOG_NOTICE, $link = $file_url);
+        $output = array('message' => t('@date: <br> File created !name to download ', array('@date' => $date, '!name' => $file_url)), 'file' => $response, 'error' => '0');
+    }
+    return $output;
+}
+
 
 /**
  * if user is not logged in or not allowed

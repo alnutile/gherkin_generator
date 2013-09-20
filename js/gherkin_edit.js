@@ -170,7 +170,7 @@
     $(document).ready(function() {
 
         $('i.remove').live('click', function(){                                 //@todo see why on did not work
-            $(this).parent('li').remove();                                      //then see why it did not work as a behavior?
+            $(this).closeButton();                                    //then see why it did not work as a behavior?
         });
 
         $('#features-tagit-input').applyTagIts('@feature_tag', 'feature');

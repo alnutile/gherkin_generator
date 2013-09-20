@@ -49,7 +49,7 @@ function _gherkin_generator_node_form(&$form) {
         '#type' => 'button',
         '#name' => 'save_test',
         '#value' => 'Save Test',
-        '#attributes' => array('class' => array('btn-info', 'disabled')),
+        '#attributes' => array('class' => array('btn-info')),
     );
 
     $form['existing_test']['actions']['start_over'] = array(

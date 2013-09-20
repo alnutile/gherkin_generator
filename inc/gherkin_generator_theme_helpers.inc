@@ -19,16 +19,35 @@ function theme_gherkin_generator_create_html($array) {
 }
 
 function template_preprocess_gherkin_generator_view_test(&$variables) {
+    module_load_include('inc', 'gherkin_generator', 'inc/gherkin_generator_file_parsing');
     $node = menu_get_object();
     $filename = $node->title;
     $file = _gherkin_generator_file_exists($filename);
+    $output = '';
+    $items = array();
     if($file) {
-
         $file_open = fopen($file, "r");
         $file_read = fread($file_open, filesize($file));
         $file_to_array = _gherkin_generator_turn_file_to_array($file_read);
-        watchdog('test_file', print_r($file_to_array, 1));
+        $array_to_html_array = _gherkin_generator_parse_questions($file_to_array, $direction = 'html_view');
+        $output = theme('item_list', $vars = array('items' => $array_to_html_array, 'attributes' => array('class' => array('scenario'))));
+    } else {
+        $output = "Could not find the related file";
     }
+
+    $variables['actions'] = array(
+        '#type' => 'container',
+        '#attributes' => array('class' => array('actions')),
+    );
+
+    $variables['actions']['run_button'] = array(
+        '#type' => 'button',
+        '#name' => 'run_test',
+        '#value' => t('Run Test'),
+        '#attributes' => array('class' => array('view-mode', 'btn-success'))
+    );
+
+    $variables['questions_view'] = $output;
 }
 
 function template_preprocess_gherkin_questions_area(&$variables) {

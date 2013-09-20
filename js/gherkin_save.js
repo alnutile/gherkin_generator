@@ -23,7 +23,7 @@
                     $('#messages').append(messages);
 
                     if(data.file.error == 0) {
-                        $('form#gherkin-generator-node-form').submit();
+                        //$('form#gherkin-generator-node-form').submit();
                     }
                 }
             };

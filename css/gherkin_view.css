@@ -2,9 +2,14 @@
   list-style: none; }
 .node-type-gherkin-generator .scenario li {
   font-size: 18px;
-  line-height: 24px; }
+  line-height: 24px;
+  list-style: none; }
   .node-type-gherkin-generator .scenario li div.help-block {
     font-size: 10px; }
+.node-type-gherkin-generator .spaces-two {
+  margin-left: 10px; }
+.node-type-gherkin-generator .spaces-four {
+  margin-left: 20px; }
 .node-type-gherkin-generator label, .node-type-gherkin-generator .qualifier {
   font-size: 18px; }
 

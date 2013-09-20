@@ -6,6 +6,7 @@
     li {
       font-size: 18px;
       line-height: 24px;
+      list-style: none;
 
       div.help-block {
         font-size: 10px;
@@ -14,6 +15,15 @@
     }
 
   }
+
+  .spaces-two {
+    margin-left: 10px;
+  }
+
+  .spaces-four {
+    margin-left: 20px;
+  }
+
   label, .qualifier {
     font-size: 18px;
   }

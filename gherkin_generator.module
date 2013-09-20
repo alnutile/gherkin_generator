@@ -26,8 +26,10 @@ function gherkin_generator_page_build(&$page) {
         drupal_add_css($path . '/css/gherkin_view.css');
         $page['content']['system_main']['nodes'][$node->nid]['#attributes']['class'][] = 'span6';
         $page['content']['system_main']['gherkin_view_test']['#theme'] = 'gherkin_generator_view_test';
-        $page['content']['test_results']['#theme'] = 'gherkin_results_area';
-        dpm($page);
+        $page['content']['system_main']['gherkin_view_test']['#weight'] = -10;
+        $page['content']['system_main']['test_results']['#weight'] = -9;
+        $page['content']['system_main']['test_results']['#theme'] = 'gherkin_results_area';
+        drupal_add_js(array('gherkin_generator' => array('gherkinGeneratorMode' => 'view')), 'setting');
     }
 }
 
@@ -147,7 +149,6 @@ function gherkin_generator_preprocess_node(&$vars) {
 }
 
 function gherkin_generator_page_alter(&$page) {
-    $node = menu_get_object();
 
     if( arg(2) == 'gherkin-generator' && arg(1) == 'add')  {
         $page['content']['system_main']['#attributes']['class'][] = 'span6';
@@ -163,5 +164,6 @@ function gherkin_generator_form_alter(&$form) {
         drupal_add_library('gherkin_generator', 'tag_it') ;
         module_load_include('inc', 'gherkin_generator', 'inc/gherkin_generator_node_form');
         _gherkin_generator_node_form($form);
+        drupal_add_js(array('gherkin_generator' => array('gherkinGeneratorMode' => 'view')), 'setting');
     }
 }

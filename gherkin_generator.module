@@ -20,9 +20,7 @@ function gherkin_generator_page_build(&$page) {
         drupal_add_js($path . '/css/gherkin_edit.css');
         drupal_add_js($path . '/js/jquery.gherkin_generator.apply_tags.js');
         drupal_add_js($path . '/js/jquery.gherkin_generator.close_button.js');
-        drupal_add_js($path . '/js/gherkin_edit.js');
         drupal_add_js($path . '/js/gherkin_run.js');
-        drupal_add_js($path . '/js/gherkin_save.js');
         drupal_add_css($path . '/css/gherkin_view.css');
         $page['content']['system_main']['nodes'][$node->nid]['#attributes']['class'][] = 'span6';
         $page['content']['system_main']['gherkin_view_test']['#theme'] = 'gherkin_generator_view_test';
@@ -40,6 +38,9 @@ function gherkin_generator_permission() {
         ),
         'save gherkin test' => array(
             'title' => t('Allowed to save tests to folders including generators')
+        ),
+        'run gherkin saved tests' => array(
+            'title' => t('These are tests attached to a node that someone already made')
         )
     );
 }

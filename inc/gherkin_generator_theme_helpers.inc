@@ -47,6 +47,12 @@ function template_preprocess_gherkin_generator_view_test(&$variables) {
         '#attributes' => array('class' => array('view-mode', 'btn-success'))
     );
 
+    $variables['filename'] = array(
+        '#type' => 'hidden',
+        '#value' => $node->title,
+        '#name' => 'filename',
+    );
+
     $variables['questions_view'] = $output;
 }
 

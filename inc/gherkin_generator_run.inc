@@ -5,19 +5,29 @@
  *   until nid exists
  */
 function gherkin_generator_run() {
+    $response = '';
     if(isset($_REQUEST['scenario'])) {
-        $response = _gherkin_generator_save_html_to_file($_REQUEST);
-
-        if($response['file'] != FALSE){
-            watchdog('test_file_response', print_r($response, 1));
-            $run_test_response = _gherkin_generator_run_test($response['file'], $_REQUEST['filename']);
+        if($_REQUEST['method'] == 'create-mode') {
+            $response = _gherkin_generator_save_html_to_file($_REQUEST);
+            if($response['file'] != FALSE){
+                $run_test_response = _gherkin_generator_run_test($response['file'], $_REQUEST['filename']);
+                //@todo respond to error!
+                $results = array('file' => $response, 'test' => $run_test_response);
+                drupal_json_output($results);
+                exit();
+            } else {
+                //@todo better error output here
+                drupal_json_output(array());
+                exit();
+            }
+        } else {
+            //Send back the Error
+            $system_path_to_file = _gherkin_generator_get_system_path_to_file($_REQUEST['filename']);
+            $full_path_with_file = $system_path_to_file . '/' . $_REQUEST['filename'] . '.feature';
+            $run_test_response = _gherkin_generator_run_test($full_path_with_file, $_REQUEST['filename']);
             //@todo respond to error!
             $results = array('file' => $response, 'test' => $run_test_response);
             drupal_json_output($results);
-            exit();
-        } else {
-            //Send back the Error
-            drupal_json_output($response);
             exit();
         }
     } else {

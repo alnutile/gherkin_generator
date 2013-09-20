@@ -93,7 +93,6 @@ function gherkin_generator_string_feature($string, $scenario, $count, $direction
                     'class' => array('feature', "spaces-none")
                 );
         }
-        watchdog('test_feature_result', print_r($results[0], 1));
         return $results;
     }
 }

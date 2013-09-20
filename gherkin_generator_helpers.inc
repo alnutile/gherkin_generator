@@ -150,13 +150,24 @@ function _gherkin_generator_spaces($spaces) {
     return $spaces_return;
 }
 
-function _gherkin_generator_file_exists($filename) {
+function _gherkin_generator_get_module_name_from_file_name($filename) {
     $file_array = explode('_', $filename);
     $folder = array_slice($file_array, 0, -1);
     $module = implode('_', $folder);
+    return $module;
+}
+
+function _gherkin_generator_get_system_path_to_file($filename) {
+    $module = _gherkin_generator_get_module_name_from_file_name($filename);
     $path = drupal_get_path('module', $module);
     $full_relative_path = $path . '/' . GHERKIN_FOLDER . '/';
     $system_path = drupal_realpath($full_relative_path);
+    return $system_path;
+}
+
+function _gherkin_generator_file_exists($filename) {
+    $system_path = _gherkin_generator_get_system_path_to_file($filename);
+    watchdog("file_exists", $system_path);
     $absolute_path = $system_path . '/' . $filename . '.feature';
     if(is_file($absolute_path)) {
         return $absolute_path;

@@ -6,7 +6,7 @@
  */
 function gherkin_generator_run() {
     if(isset($_REQUEST['scenario'])) {
-        $response = _gherkin_generator_save_to_file($_REQUEST);
+        $response = _gherkin_generator_save_html_to_file($_REQUEST);
 
         if($response['file'] != FALSE){
             watchdog('test_file_response', print_r($response, 1));

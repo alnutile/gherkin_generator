@@ -18,6 +18,18 @@ function theme_gherkin_generator_create_html($array) {
 
 }
 
+function template_preprocess_gherkin_generator_view_test(&$variables) {
+    $node = menu_get_object();
+    $filename = $node->title;
+    $file = _gherkin_generator_file_exists($filename);
+    if($file) {
+
+        $file_open = fopen($file, "r");
+        $file_read = fread($file_open, filesize($file));
+        $file_to_array = _gherkin_generator_turn_file_to_array($file_read);
+        watchdog('test_file', print_r($file_to_array, 1));
+    }
+}
 
 function template_preprocess_gherkin_questions_area(&$variables) {
 

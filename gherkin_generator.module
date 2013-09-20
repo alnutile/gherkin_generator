@@ -12,6 +12,23 @@ include_once 'gherkin_generator_helpers.inc';
 function gherkin_generator_page_build(&$page) {
     drupal_add_js(array('gherkin_generator' => array('gherkinGeneratorDefaultPath' => file_directory_temp())), 'setting');
     drupal_add_js(array('gherkin_generator' => array('gherkinGeneratorFilePreix' => GHERKIN_FILE_PREFIX)), 'setting');
+
+    if(($node = menu_get_object()) && $node->type == 'gherkin_generator') {
+        drupal_add_library('system', 'ui.sortable');
+        drupal_add_library('system', 'ui.autocomplete');
+        $path = drupal_get_path('module', 'gherkin_generator');
+        drupal_add_js($path . '/css/gherkin_edit.css');
+        drupal_add_js($path . '/js/jquery.gherkin_generator.apply_tags.js');
+        drupal_add_js($path . '/js/jquery.gherkin_generator.close_button.js');
+        drupal_add_js($path . '/js/gherkin_edit.js');
+        drupal_add_js($path . '/js/gherkin_run.js');
+        drupal_add_js($path . '/js/gherkin_save.js');
+        drupal_add_css($path . '/css/gherkin_view.css');
+        $page['content']['system_main']['nodes'][$node->nid]['#attributes']['class'][] = 'span6';
+        $page['content']['system_main']['gherkin_view_test']['#theme'] = 'gherkin_generator_view_test';
+        $page['content']['test_results']['#theme'] = 'gherkin_results_area';
+        dpm($page);
+    }
 }
 
 function gherkin_generator_permission() {
@@ -86,11 +103,17 @@ function gherkin_generator_theme(){
             ),
             'file' => 'inc/gherkin_generator_theme_helpers.inc'
         ),
-
         'gherkin_generator_create_html' => array(
             'variables' => array(
                 'scenario' => NULL,
             ),
+            'file' => 'inc/gherkin_generator_theme_helpers.inc'
+        ),
+        'gherkin_generator_view_test' => array(
+            'variables' => array(
+                'params' => NULL,
+            ),
+            'template' => 'tpl/gherkin-view-test',
             'file' => 'inc/gherkin_generator_theme_helpers.inc'
         )
     );
@@ -117,16 +140,21 @@ function gherkin_generator_check_for_modules() {
 }
 
 
-
-function gherkin_generator_page_alter(&$page) {
-
-    if(arg(2) == 'gherkin-generator' && arg(1) == 'add') {
-
-        $page['content']['system_main']['#attributes']['class'][] = 'span6';
-        $page['content']['test_results']['#theme'] = 'gherkin_results_area';
+function gherkin_generator_preprocess_node(&$vars) {
+    if($vars['type'] == 'gherkin_generator') {
+        $vars['classes_array'][] = 'span6';
     }
 }
 
+function gherkin_generator_page_alter(&$page) {
+    $node = menu_get_object();
+
+    if( arg(2) == 'gherkin-generator' && arg(1) == 'add')  {
+        $page['content']['system_main']['#attributes']['class'][] = 'span6';
+        $page['content']['test_results']['#theme'] = 'gherkin_results_area';
+    }
+
+}
 
 
 function gherkin_generator_form_alter(&$form) {

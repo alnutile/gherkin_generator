@@ -1,0 +1,25 @@
+.node-type-gherkin-generator {
+  ul.sortable {
+    list-style: none;
+  }
+  .scenario {
+    li {
+      font-size: 18px;
+      line-height: 24px;
+
+      div.help-block {
+        font-size: 10px;
+      }
+
+    }
+
+  }
+  label, .qualifier {
+    font-size: 18px;
+  }
+
+}
+
+.running-tests, .saving-tests {
+  display: none;
+}

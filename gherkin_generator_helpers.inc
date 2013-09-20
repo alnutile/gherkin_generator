@@ -8,10 +8,11 @@
  *     filename -
  * @return array
  */
-function _gherkin_generator_save_to_file($request) {
+function _gherkin_generator_save_html_to_file($request) {
     //@todo why was this not loaded with info file files[] call?
     module_load_include('inc', 'gherkin_generator', 'inc/gherkin_generator_file_parsing');
-    $feature = _gherkin_generator_parse_questions($request['scenario']);
+    $scenario_array = _gherkin_generator_parse_questions($request['scenario']);
+    $feature = theme('gherkin_generator_create_file', $vars = array('scenario' => $scenario_array));
     $filename = $request['filename'] . '.feature';
     $module = $request['path'];
     global $user;
@@ -147,4 +148,29 @@ function _gherkin_generator_spaces($spaces) {
         $spaces_return = $spaces_return . " ";
     }
     return $spaces_return;
+}
+
+function _gherkin_generator_file_exists($filename) {
+    $file_array = explode('_', $filename);
+    $folder = array_slice($file_array, 0, -1);
+    $module = implode('_', $folder);
+    $path = drupal_get_path('module', $module);
+    $full_relative_path = $path . '/' . GHERKIN_FOLDER . '/';
+    $system_path = drupal_realpath($full_relative_path);
+    $absolute_path = $system_path . '/' . $filename . '.feature';
+    if(is_file($absolute_path)) {
+        return $absolute_path;
+    } else {
+        return FALSE;
+    }
+}
+
+function _gherkin_generator_turn_file_to_array($file) {
+    $array = explode("\n", $file);
+    foreach($array as $key => $value) {
+        if(strlen($value) <= 1) {
+            unset($array[$key]);
+        }
+    }
+    return $array;
 }

@@ -24,8 +24,7 @@ function _gherkin_generator_parse_questions($scenario) {
         }
         $count++;
     }
-    $output = theme('gherkin_generator_create_file', $vars = array('scenario' => $scenario_array));
-    return $output;
+    return $scenario_array;
 }
 
 

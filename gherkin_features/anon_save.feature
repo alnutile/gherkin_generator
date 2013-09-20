@@ -1,8 +1,8 @@
 @javascript
-Feature: Making tests and saving files
-  Should allow the user to make a test and save a file
-  User of the website both anonymous and auth
-  The user can come to the site, make a tests and save it
+Feature: Saving and Running Tests
+  Should allow the user to make a test, run and save a file
+  User of the website both anonymous and authenticated
+  The user can come to the site, make a tests, run and save it
 
   @anonymous
   Scenario: Anonymous user makes tests and saves it
@@ -33,7 +33,7 @@ Feature: Making tests and saving files
     And I should see "Scenario: WikiPedia"
 
   @anonymous
-  Scenario: Anonymous user adds looks at feil
+  Scenario: Anonymous user adds looks at file
     Given I am on "/node/add/gherkin-generator"
     Then I should see "This is a tool to help"
     And I follow "click here"
@@ -44,9 +44,46 @@ Feature: Making tests and saving files
     Then I should see "Scenario: WikiPedia"
     Then I should not see "This is a tool to help"
 
-#  @thisone @anonymous
-#  Scenario: Should be able to add tags to a feature
-#    Given I am on "/node/add/gherkin-generator"
-#    Then I should see "Tag"
-#    And I fill in "ui-widget-content" with "@tag1"
-#    Then I should see "@tag1"
+  @anonymous
+  Scenario: Anonymous user adds feature tag
+    Given I am on "/node/add/gherkin-generator"
+    Then I should see "This is a tool to help"
+    And I fill in "name" with "Mink Rocks"
+    And I press "Name it"
+    And I fill in featuresTag
+    And I press "Save Test"
+    And I wait
+    Then I should see "File created"
+    And I follow savedTest
+    Then I should see "@tag1"
+    Then I should not see "This is a tool to help"
+
+  #not ideal I need to hit the second tag box
+  @anonymous
+  Scenario: 2 Tags 2 Scenarios
+    Given I am on "/node/add/gherkin-generator"
+    Then I should see "This is a tool to help"
+    And I fill in featuresTag
+    And I fill in "name" with "Mink Rocks"
+    And I press "Name it"
+    And I fill in sectionOneTag
+    And I fill in "name" with "Testing Rocks"
+    And I press "Name it"
+    And I fill in sectionTwoTag
+    And I press "Save Test"
+    And I wait
+    Then I should see "File created"
+    And I follow savedTest
+    Then I should see "@tag1"
+    Then I should see "@tag2"
+    Then I should not see "This is a tool to help"
+
+  @anonymous @runtest @thisone
+  Scenario: User runs a test
+    Given I am on "/node/add/gherkin-generator"
+    And I fill in "name" with "Run Test Test"
+    And I fill in "url" with "/node/add/gherkin-generator"
+    And I fill in "see_not_see_some_text" with "Success"
+    And I press "Run Test"
+    And I wait
+    And I should see "Test successful!"

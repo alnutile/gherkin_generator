@@ -4,6 +4,7 @@
 function _gherkin_generator_node_form(&$form) {
     $path = drupal_get_path('module', 'gherkin_generator');
     drupal_add_library('system', 'ui.sortable');
+    drupal_add_library('system', 'ui.autocomplete');
     $form['#attached']['css']['gherkin_generator'] = $path . '/css/gherkin_edit.css';
     $form['#attached']['js']['gherkin_generator_tags'] = $path . '/js/jquery.gherkin_generator.apply_tags.js';
     $form['#attached']['js']['gherkin_generator_close_button'] = $path . '/js/jquery.gherkin_generator.close_button.js';

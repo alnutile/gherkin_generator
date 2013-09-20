@@ -7,7 +7,7 @@
             wrapper += "<li class='ignore'><i class='icon-move pull-left'></i><ul id='scenario-input-"+id+"'></ul></li>";
         return wrapper;
     };
-
+    Drupal.behaviors.gherkin_generator_edit = {};
     Drupal.behaviors.gherkin_generator_edit = {
         attach: function (context) {
 
@@ -34,7 +34,7 @@
                     destination_wrapper += data_value;
                     (middle_words.length) ? destination_wrapper += ' ' + middle_words : '';
                     (data_value2.length) ? destination_wrapper += ' ' + data_value2 : '';
-                    destination_wrapper += closeCheck(label_text);
+                    destination_wrapper += ' <i class="remove icon-remove-circle"></i>';
                     destination_wrapper += '</li>';
                 return destination_wrapper;
             };
@@ -72,9 +72,6 @@
                 }
             };
 
-            var closeCheck = function(label_text) {
-                return ' <i class="remove icon-remove-circle"></i>';
-            };
 
             var setFeature = function(destination_class, data_value) {
                 if(destination_class == 'url') {
@@ -89,9 +86,6 @@
                 $('#messages', context).append(messages);
             };
 
-            var placeSelection = function(text, destination, context) {
-                $('ul.scenario', context).append(text).applyTagIts('@scenario_tag', 'scenario');
-            };
 
             /* offer an example */
             $('a.example-test-load', context).click(function(){
@@ -103,6 +97,11 @@
                 checkIfCanSave();
                 return false;
             });
+
+            $('i.remove', context).click( function() {
+                $(this).closeButton();
+            });                                              //then see why it did not work as a behavior?
+
 
             $('ul.sortable').sortable();
 
@@ -159,19 +158,14 @@
                 var sortable = sortableQuestion(destination_class);
                 var destination_wrapper = createOutput(leaf_class, sortable, label, data_value, middle_words, data_value2, label_text);
 
-                var destination = '.scenario .' +destination_class;
-
-                placeSelection(destination_wrapper, destination, context);
+                $('ul.scenario', context).append(destination_wrapper).applyTagIts('@scenario_tag', 'scenario');
+                Drupal.attachBehaviors($('ul.scenario'));
                 checkIfCanRun();
             });
        }
     };
 
     $(document).ready(function() {
-
-        $('i.remove').live('click', function(){                                 //@todo see why on did not work
-            $(this).closeButton();                                    //then see why it did not work as a behavior?
-        });
 
         $('#features-tagit-input').applyTagIts('@feature_tag', 'feature');
 

@@ -73,11 +73,7 @@
             };
 
             var closeCheck = function(label_text) {
-                if (label_text == 'Given I am on' || label_text.search('Scenario') != -1) {
-                    return '';
-                } else {
-                    return ' <i class="remove icon-remove-circle"></i>';
-                }
+                return ' <i class="remove icon-remove-circle"></i>';
             };
 
             var setFeature = function(destination_class, data_value) {
@@ -96,7 +92,6 @@
             var placeSelection = function(text, destination, context) {
                 $('ul.scenario', context).append(text).applyTagIts('@scenario_tag', 'scenario');
             };
-
 
             /* offer an example */
             $('a.example-test-load', context).click(function(){
@@ -173,12 +168,12 @@
     };
 
     $(document).ready(function() {
-        $('#features-tagit-input').applyTagIts('@feature_tag', 'feature');
-
 
         $('i.remove').live('click', function(){                                 //@todo see why on did not work
             $(this).parent('li').remove();                                      //then see why it did not work as a behavior?
         });
+
+        $('#features-tagit-input').applyTagIts('@feature_tag', 'feature');
 
     });
 

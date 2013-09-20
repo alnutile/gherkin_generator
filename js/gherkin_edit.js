@@ -102,14 +102,10 @@
                 $(this).closeButton();
             });                                              //then see why it did not work as a behavior?
 
+            $('#features-tagit-input', context).applyTagIts('@feature_tag', 'feature');
 
             $('ul.sortable').sortable();
 
-            $('#gherkin-generator-node-form').submit(
-                function(e){
-                    //e.preventDefault();
-                }
-            );
 
             $('button.steps', context).click(function(){
                 var label = '';
@@ -164,11 +160,5 @@
             });
        }
     };
-
-    $(document).ready(function() {
-
-        $('#features-tagit-input').applyTagIts('@feature_tag', 'feature');
-
-    });
 
 })(jQuery);

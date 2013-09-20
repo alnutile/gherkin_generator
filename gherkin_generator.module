@@ -4,12 +4,14 @@
  * Code for the gherkin_generator feature.
  */
 define('GHERKIN_FOLDER', 'gherkin_features');
+define('GHERKIN_FILE_PREFIX', 'gherkin_generator');
 
 include_once 'gherkin_generator.features.inc';
 include_once 'gherkin_generator_helpers.inc';
 
 function gherkin_generator_page_build(&$page) {
     drupal_add_js(array('gherkin_generator' => array('gherkinGeneratorDefaultPath' => file_directory_temp())), 'setting');
+    drupal_add_js(array('gherkin_generator' => array('gherkinGeneratorFilePreix' => GHERKIN_FILE_PREFIX)), 'setting');
 }
 
 function gherkin_generator_permission() {
@@ -99,14 +101,19 @@ function gherkin_generator_theme(){
  * @todo better way to get this info?
  */
 function gherkin_generator_check_for_modules() {
-    $module_array = array();
-    $modules = module_list();
-    foreach ($modules as $module) {
-        if ($status = _gherkin_generator_has_folder($module)) {
-            $module_array[$module] = $status;
+    if($cached = cache_get('gherkin_generator_modules', 'cache')) {
+        return $cached->data;
+    } else {
+        $module_array = array();
+        $modules = module_list();
+        foreach ($modules as $module) {
+            if ($status = _gherkin_generator_has_folder($module)) {
+                $module_array[$module] = $status;
+            }
         }
+        cache_set('gherkin_generator_modules', $module_array, 'cache', CACHE_TEMPORARY);
+        return $module_array;
     }
-    return $module_array;
 }
 
 

@@ -12,11 +12,18 @@ function _gherkin_generator_node_form(&$form) {
     $form['#attached']['js']['gherkin_generator_run'] = $path . '/js/gherkin_run.js';
     $form['#attached']['js']['gherkin_generator_save'] = $path . '/js/gherkin_save.js';
 
-    $filename = REQUEST_TIME;
+    $filename_prefix = GHERKIN_FILE_PREFIX;
+    $timestamp = REQUEST_TIME;
 
     $form['title'] = array(
         '#type' => 'hidden',
-        '#default_value' => $filename
+        '#default_value' => $filename_prefix . '_' . $timestamp
+    );
+
+    $form['timestamp'] = array(
+        '#type' => 'hidden',
+        '#default_value' => $timestamp,
+        '#name' => 'timestamp'
     );
 
     $form['actions']['#attributes'] = array('class' => array('hidden'));
@@ -33,12 +40,10 @@ function _gherkin_generator_node_form(&$form) {
         '#theme' => 'gherkin_questions_area'
     );
 
-
     $form['existing_test']['actions'] = array(
         '#type' => 'container',
         '#attributes' => array('class' => array('actions')),
     );
-
 
     $form['existing_test']['actions']['run_test'] = array(
         '#type' => 'button',
@@ -66,7 +71,6 @@ function _gherkin_generator_node_form(&$form) {
         '#attributes' => array('class' => array('well')),
         '#weight' => -100
     );
-
 
     $modules_with_folders = gherkin_generator_check_for_modules();
     $modules_writable = _gherkin_generator_options_list($modules_with_folders);
@@ -229,6 +233,6 @@ function _gherkin_generator_node_form(&$form) {
     $form['filename'] = array(
         '#type' => 'hidden',
         '#name' => 'filename',
-        '#value' => $filename,
+        '#value' => $filename_prefix . '_' . $timestamp,
     );
 }

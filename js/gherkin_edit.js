@@ -97,6 +97,13 @@
                 checkIfCanSave();
                 return false;
             });
+            $('#edit-save-to', context).change(function(){
+                var selectedModule = $('option:selected', this).val();
+                var timestamp = $('input[name=timestamp]').val();
+                var filename = selectedModule + '_' + timestamp;
+                $('input[name=filename]').val(filename);
+                $('input[name=title]').val(filename);
+            });
 
             $('i.remove', context).click( function() {
                 $(this).closeButton();
